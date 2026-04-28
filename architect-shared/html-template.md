@@ -336,9 +336,25 @@ sequenceDiagram
 **ER diagram** (data architecture):
 ```
 erDiagram
+  USER {
+    uuid id PK
+    varchar email
+    varchar status
+  }
+  ORDER {
+    uuid id PK
+    uuid user_id FK
+    varchar status
+  }
   USER ||--o{ ORDER : places
   ORDER ||--|{ ITEM : contains
 ```
+
+**ER diagram rules (Mermaid 10.x):**
+- Attribute key constraints: `PK`, `FK`, or `UK` only — never `PK_FK` or combined forms
+- For a field that is both PK and FK (e.g. a 1-to-1 join table key), use `PK`; the FK relationship is implied by the relationship line
+- Attribute types must be word characters only (`varchar`, `uuid`, `text`, `boolean`, `timestamptz`) — do not use `enum` as a type; use `varchar` instead
+- Quoted comments after the key constraint are optional; avoid `|` inside them as it can confuse the parser
 
 **Deployment**:
 ```
