@@ -3,16 +3,6 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-detect_agent() {
-  if command -v claude &>/dev/null && [ -d "$HOME/.claude" ]; then
-    echo "claude"
-  elif [ -d "$HOME/.agents" ]; then
-    echo "codex"
-  else
-    echo "unknown"
-  fi
-}
-
 install_to() {
   local target_dir="$1"
   mkdir -p "$target_dir"
@@ -25,7 +15,7 @@ install_to() {
   echo "  ✓ architect-shared"
 }
 
-AGENT="${1:-$(detect_agent)}"
+AGENT="${1:-}"
 
 case "$AGENT" in
   claude)
@@ -36,16 +26,16 @@ case "$AGENT" in
     echo "  After superpowers:brainstorming writes and the user approves the spec,"
     echo "  always invoke architect-design-review before invoking writing-plans."
     ;;
-  codex)
-    install_to "$HOME/.agents/skills"
+  "")
+    echo "Usage: ./install.sh [claude|<path>]"
     echo ""
-    echo "Codex: add the equivalent workflow hook to your agent config."
+    echo "  claude     Install to ~/.claude/skills/ (Claude Code global)"
+    echo "  <path>     Install to a custom path (e.g. .claude/skills for project-local)"
+    echo ""
+    echo "For Cursor, Windsurf, Copilot, Codex CLI, and Gemini CLI, see README.md"
+    echo "for the manual cat commands that inline all skill content into a single file."
     ;;
   *)
-    echo "Usage: ./install.sh [claude|codex|<path>]"
-    echo ""
-    echo "  claude     Install to ~/.claude/skills/ (Claude Code)"
-    echo "  codex      Install to ~/.agents/skills/ (Codex)"
-    echo "  <path>     Install to a custom path"
+    install_to "$AGENT"
     ;;
 esac
