@@ -46,6 +46,9 @@ Cursor does not have named slash-command skills. To use these instructions in Cu
 
 ```bash
 cat architect-design-review/SKILL.md architect-codebase-review/SKILL.md \
+    architect-shared/architecture-principles.md \
+    architect-shared/diagram-selection.md \
+    architect-shared/html-template.md \
     > .cursor/rules/architect.mdc
 ```
 
@@ -58,6 +61,9 @@ Similar to Cursor. Add the skill content as a Windsurf rule:
 ```bash
 mkdir -p .windsurf/rules
 cat architect-design-review/SKILL.md architect-codebase-review/SKILL.md \
+    architect-shared/architecture-principles.md \
+    architect-shared/diagram-selection.md \
+    architect-shared/html-template.md \
     > .windsurf/rules/architect.md
 ```
 
@@ -69,6 +75,9 @@ Add to `.github/copilot-instructions.md` in your project:
 
 ```bash
 cat architect-design-review/SKILL.md architect-codebase-review/SKILL.md \
+    architect-shared/architecture-principles.md \
+    architect-shared/diagram-selection.md \
+    architect-shared/html-template.md \
     >> .github/copilot-instructions.md
 ```
 
@@ -80,6 +89,9 @@ Add to `AGENTS.md` in your project root, or to `~/.codex/instructions.md` for gl
 
 ```bash
 cat architect-design-review/SKILL.md architect-codebase-review/SKILL.md \
+    architect-shared/architecture-principles.md \
+    architect-shared/diagram-selection.md \
+    architect-shared/html-template.md \
     >> AGENTS.md
 ```
 
@@ -89,6 +101,9 @@ Add to `GEMINI.md` in your project root:
 
 ```bash
 cat architect-design-review/SKILL.md architect-codebase-review/SKILL.md \
+    architect-shared/architecture-principles.md \
+    architect-shared/diagram-selection.md \
+    architect-shared/html-template.md \
     >> GEMINI.md
 ```
 
