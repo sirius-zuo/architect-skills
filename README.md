@@ -9,9 +9,13 @@ Both skills produce a Mermaid.js HTML report saved to `docs/architecture/review/
 
 ## Installation
 
-### Claude Code
+### Claude Code (recommended — full skill invocation support)
+
+**Global install** (skills available in every project):
 
 ```bash
+git clone https://github.com/sirius-zuo/architect-skills.git
+cd architect-skills
 ./install.sh claude
 ```
 
@@ -22,21 +26,75 @@ After superpowers:brainstorming writes and the user approves the spec,
 always invoke architect-design-review before invoking writing-plans.
 ```
 
-### Codex
+**Project-local install** (skills available only in current project):
 
 ```bash
-./install.sh codex
+./install.sh .claude/skills
 ```
 
-Add the equivalent workflow hook to your Codex agent configuration.
+**Verify:**
+```bash
+# In Claude Code, type:
+/architect-design-review
+```
 
-### Other agents / custom path
+### Cursor
+
+Cursor does not have named slash-command skills. To use these instructions in Cursor:
+
+1. Copy the skill content you want into `.cursor/rules/architect.mdc` in your project:
 
 ```bash
-./install.sh ~/.my-agent/skills
+cat architect-design-review/SKILL.md architect-codebase-review/SKILL.md \
+    > .cursor/rules/architect.mdc
 ```
 
-The three directories (`architect-design-review/`, `architect-codebase-review/`, `architect-shared/`) must be installed as siblings — the skills reference shared files at `../architect-shared/`.
+2. In Cursor Agent mode, prompt: *"Follow the architect skill instructions to review the architecture of this project."*
+
+### Windsurf
+
+Similar to Cursor. Add the skill content as a Windsurf rule:
+
+```bash
+mkdir -p .windsurf/rules
+cat architect-design-review/SKILL.md architect-codebase-review/SKILL.md \
+    > .windsurf/rules/architect.md
+```
+
+Then prompt Cascade: *"Follow the architect workflow instructions in the rules to review the architecture of this project."*
+
+### GitHub Copilot
+
+Add to `.github/copilot-instructions.md` in your project:
+
+```bash
+cat architect-design-review/SKILL.md architect-codebase-review/SKILL.md \
+    >> .github/copilot-instructions.md
+```
+
+Then in Copilot Chat: *"Review the architecture of this project following the instructions."*
+
+### OpenAI Codex CLI
+
+Add to `AGENTS.md` in your project root, or to `~/.codex/instructions.md` for global use:
+
+```bash
+cat architect-design-review/SKILL.md architect-codebase-review/SKILL.md \
+    >> AGENTS.md
+```
+
+### Gemini CLI
+
+Add to `GEMINI.md` in your project root:
+
+```bash
+cat architect-design-review/SKILL.md architect-codebase-review/SKILL.md \
+    >> GEMINI.md
+```
+
+---
+
+> **Note:** The three directories (`architect-design-review/`, `architect-codebase-review/`, `architect-shared/`) must be installed as siblings — the skills reference shared files at `../architect-shared/`.
 
 ## Usage
 
