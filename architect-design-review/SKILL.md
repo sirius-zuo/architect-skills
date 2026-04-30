@@ -93,19 +93,19 @@ Evaluate against the Security section of the principles:
 ### Step 7c: Scalability
 
 Evaluate against the Scalability section of the principles:
-- Stateless services: Can instances be added horizontally without shared mutable state?
+- Stateless services: Can instances be added horizontally without shared mutable state? Where is session/state stored?
 - Data partitioning: Is there a sharding or tenant-isolation strategy for high data volumes?
 - Caching: Are hot read paths cached? Is cache invalidation addressed?
 - Async processing: Are long-running tasks offloaded from the synchronous request path?
 - Rate limiting and backpressure: Is the system protected from traffic spikes?
-- Capacity headroom: Are there obvious bottlenecks (N+1 queries, unbounded queues)?
+- Capacity headroom: Are there obvious bottlenecks (N+1 queries, unbounded queues, single-threaded workers)?
 
 ### Step 7d: Reliability
 
 Evaluate against the Reliability section of the principles:
 - Graceful degradation: Does the system define behavior when a dependency is unavailable?
 - Circuit breakers and retries: Are patterns in place to prevent cascade failures?
-- Redundancy: Are there single points of failure (single DB, single app instance)?
+- Redundancy: Are there single points of failure (single DB, single app instance, single region)?
 - Failover: Is there an active/passive or active/active setup for critical components?
 - Health checks: Are liveness and readiness probes defined for all services?
 
