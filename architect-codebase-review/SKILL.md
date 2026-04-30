@@ -90,7 +90,7 @@ Evaluate against the Security section of the principles:
 - AuthN/AuthZ: Is authentication enforced at the right layer? Is authorization centralized or scattered?
 - Secrets management: Are credentials/keys externalized? Is there a secrets store pattern?
 - Network boundaries: Are internal services unnecessarily exposed? Is there an API gateway or DMZ?
-- Data protection: Is encryption at rest and in transit implemented? Are sensitive fields identified?
+- Data protection: Is encryption at rest and in transit accounted for? Are sensitive fields identified?
 - OWASP Top 10 signals: injection risks, broken access control, security misconfiguration, insecure design, vulnerable components, sensitive data exposure.
 
 ### Step 8c: Scalability
