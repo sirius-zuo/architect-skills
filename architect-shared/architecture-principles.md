@@ -42,15 +42,17 @@ Core business logic has no dependency on external systems. External systems conn
 
 **When relevant:** Systems with multiple external integrations, or where external systems are likely to change.
 
-## Scalability Considerations
+## Scalability
 
 The architecture can grow — more users, more data, more features — without fundamental restructuring.
 
 **Check for:**
-- Stateless services (can be horizontally scaled)
-- Clear data partitioning strategy
-- Asynchronous processing for long-running tasks
-- Caching strategy for hot paths
+- **Stateless services** — Can instances be added horizontally without shared mutable state? Where is session/state stored?
+- **Data partitioning** — Is there a sharding or tenant-isolation strategy for high data volumes?
+- **Caching** — Are hot read paths cached? Is cache invalidation addressed?
+- **Async processing** — Are long-running tasks offloaded from the synchronous request path (queues, workers)?
+- **Rate limiting and backpressure** — Is the system protected from traffic spikes at the entry point?
+- **Capacity headroom** — Are there obvious bottlenecks (single-threaded workers, unbounded queues, N+1 queries)?
 
 ## Observability
 
@@ -61,6 +63,34 @@ The system can be understood in production: errors are logged, key events are tr
 - Error propagation and surfacing
 - Health endpoints or readiness probes
 - Metrics for critical operations
+
+## Security
+
+OWASP-aware, architecture-level review.
+
+**Check for:**
+- **AuthN/AuthZ** — Is authentication enforced at the right layer? Is authorization centralized or scattered across handlers?
+- **Secrets management** — Are credentials/API keys hardcoded or externalized? Is there a secrets store pattern (env vars, vault, cloud secrets manager)?
+- **Network boundaries** — Are internal services exposed unnecessarily? Is there an API gateway or DMZ pattern isolating the public surface?
+- **Data protection** — Is encryption at rest and in transit accounted for in the design? Are sensitive fields identified?
+- **OWASP Top 10 signals:**
+  - Injection risks (parameterized queries, ORM usage, input sanitization)
+  - Broken access control (object-level auth, missing ownership checks)
+  - Security misconfiguration (default credentials, verbose error responses, open CORS)
+  - Insecure design (missing rate limiting, no account lockout, predictable IDs)
+  - Use of components with known vulnerabilities (outdated dependencies)
+  - Sensitive data exposure (logging PII, unencrypted storage of secrets)
+
+## Reliability
+
+High-availability focused.
+
+**Check for:**
+- **Graceful degradation** — Does the system define behavior when a dependency is unavailable? Are fallbacks or defaults in place?
+- **Circuit breakers and retries** — Are patterns in place to prevent cascade failures across service boundaries?
+- **Redundancy** — Are there single points of failure (single DB instance, single app server, single region)?
+- **Failover** — Is there an active/passive or active/active setup for critical components?
+- **Health checks** — Are liveness and readiness probes defined for all services? Does the load balancer use them?
 
 ## C4 Model Vocabulary (for communication)
 

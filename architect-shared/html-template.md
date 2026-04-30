@@ -7,12 +7,18 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
 **For `architect-design-review`:**
 - Executive Summary
 - Architecture Diagrams
-- Evaluation
+- Architecture
+- Security
+- Scalability
+- Reliability
 - Recommendations
 
 **For `architect-codebase-review`:**
 - Current Architecture (diagrams + narrative)
-- Evaluation
+- Architecture
+- Security
+- Scalability
+- Reliability
 - Recommended Architecture (revised diagrams + migration notes)
 
 ## Full HTML template
@@ -165,12 +171,18 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
     <!-- Design review nav: -->
     <a href="#summary">Executive Summary</a>
     <a href="#diagrams">Diagrams</a>
-    <a href="#evaluation">Evaluation</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#security">Security</a>
+    <a href="#scalability">Scalability</a>
+    <a href="#reliability">Reliability</a>
     <a href="#recommendations">Recommendations</a>
 
     <!-- Codebase review nav (replace above with this):
     <a href="#current">Current Architecture</a>
-    <a href="#evaluation">Evaluation</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#security">Security</a>
+    <a href="#scalability">Scalability</a>
+    <a href="#reliability">Reliability</a>
     <a href="#recommended">Recommended Architecture</a>
     -->
   </nav>
@@ -223,8 +235,8 @@ graph LR
 
     </section>
 
-    <section id="evaluation">
-      <h2>Evaluation</h2>
+    <section id="architecture">
+      <h2>Architecture</h2>
       <div class="findings">
 
         <div class="finding strength">
@@ -254,6 +266,33 @@ graph LR
       </div>
     </section>
 
+    <section id="security">
+      <h2>Security</h2>
+      <div class="findings">
+
+        <!-- Add finding blocks here -->
+
+      </div>
+    </section>
+
+    <section id="scalability">
+      <h2>Scalability</h2>
+      <div class="findings">
+
+        <!-- Add finding blocks here -->
+
+      </div>
+    </section>
+
+    <section id="reliability">
+      <h2>Reliability</h2>
+      <div class="findings">
+
+        <!-- Add finding blocks here -->
+
+      </div>
+    </section>
+
     <section id="recommendations" class="recommendations">
       <h2>Recommendations</h2>
       <div class="card">
@@ -275,8 +314,29 @@ graph LR
       </div>
     </section>
 
-    <section id="evaluation">
-      <h2>Evaluation</h2>
+    <section id="architecture">
+      <h2>Architecture</h2>
+      <div class="findings">
+        [finding blocks]
+      </div>
+    </section>
+
+    <section id="security">
+      <h2>Security</h2>
+      <div class="findings">
+        [finding blocks]
+      </div>
+    </section>
+
+    <section id="scalability">
+      <h2>Scalability</h2>
+      <div class="findings">
+        [finding blocks]
+      </div>
+    </section>
+
+    <section id="reliability">
+      <h2>Reliability</h2>
       <div class="findings">
         [finding blocks]
       </div>

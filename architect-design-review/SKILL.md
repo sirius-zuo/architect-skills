@@ -75,17 +75,52 @@ Generate Mermaid.js code for core diagrams and each user-confirmed additional di
 
 ## Step 7: Evaluate the design
 
-Using `../architect-shared/architecture-principles.md`, evaluate each relevant principle against what's described in the spec. Produce a list of findings classified as Strength, Concern, or Risk.
+Load `../architect-shared/architecture-principles.md`. Run four domain evaluations in order. Each produces a list of findings classified as Strength, Concern, or Risk.
+
+### Step 7a: Architecture
+
+Evaluate against: Separation of Concerns, Cohesion and Coupling, Layered Architecture, Hexagonal Architecture / Ports and Adapters. Also check for Architectural Smells: god modules, missing abstraction layers, circular dependencies, tight coupling between business logic and infrastructure, missing error boundaries or observability hooks.
+
+### Step 7b: Security
+
+Evaluate against the Security section of the principles:
+- AuthN/AuthZ: Is authentication enforced at the right layer? Is authorization centralized or scattered?
+- Secrets management: Are credentials/keys externalized? Is there a secrets store pattern?
+- Network boundaries: Are internal services unnecessarily exposed? Is there an API gateway or DMZ?
+- Data protection: Is encryption at rest and in transit accounted for? Are sensitive fields identified?
+- OWASP Top 10 signals: injection risks, broken access control, security misconfiguration, insecure design, vulnerable components, sensitive data exposure.
+
+### Step 7c: Scalability
+
+Evaluate against the Scalability section of the principles:
+- Stateless services: Can instances be added horizontally without shared mutable state? Where is session/state stored?
+- Data partitioning: Is there a sharding or tenant-isolation strategy for high data volumes?
+- Caching: Are hot read paths cached? Is cache invalidation addressed?
+- Async processing: Are long-running tasks offloaded from the synchronous request path?
+- Rate limiting and backpressure: Is the system protected from traffic spikes?
+- Capacity headroom: Are there obvious bottlenecks (N+1 queries, unbounded queues, single-threaded workers)?
+
+### Step 7d: Reliability
+
+Evaluate against the Reliability section of the principles:
+- Graceful degradation: Does the system define behavior when a dependency is unavailable?
+- Circuit breakers and retries: Are patterns in place to prevent cascade failures?
+- Redundancy: Are there single points of failure (single DB, single app instance, single region)?
+- Failover: Is there an active/passive or active/active setup for critical components?
+- Health checks: Are liveness and readiness probes defined for all services?
 
 ## Step 8: Build the HTML report
 
 Read `../architect-shared/html-template.md`. Fill in the design review template with:
 - **Executive summary** — 2-3 sentences on what the system is and key architectural choices
 - **Architecture diagrams** — each diagram in a `diagram-card` with title and one-line description
-- **Evaluation** — all findings as `finding` blocks with correct badge class
-- **Recommendations** — numbered actionable improvements
+- **Architecture** — findings from Step 7a as `finding` blocks
+- **Security** — findings from Step 7b as `finding` blocks
+- **Scalability** — findings from Step 7c as `finding` blocks
+- **Reliability** — findings from Step 7d as `finding` blocks
+- **Recommendations** — numbered actionable improvements synthesizing all domain findings
 
-Use the nav links: `#summary`, `#diagrams`, `#evaluation`, `#recommendations`.
+Use the nav links: `#summary`, `#diagrams`, `#architecture`, `#security`, `#scalability`, `#reliability`, `#recommendations`.
 
 ## Step 9: Save the report
 
