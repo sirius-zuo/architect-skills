@@ -1,6 +1,11 @@
+<p align="center">
+  <img src="assets/architect-skills.png" alt="Architect Skills" width="1280">
+</p>
+
+
 # Architect Skills
 
-A portable skill set for architecture review at two stages of development:
+LLM agent skills for software architecture analysis and review. This repository equips AI agents with reusable capabilities to evaluate system design, review architecture decisions, identify risks, analyze trade-offs, and recommend improvements for scalable, reliable, and maintainable systems.
 
 - **`architect-design-review`** — reviews an approved design spec and generates an architecture report before implementation begins
 - **`architect-codebase-review`** — analyzes an existing codebase and generates a current + recommended architecture report
