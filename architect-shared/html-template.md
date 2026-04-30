@@ -414,7 +414,9 @@ erDiagram
 - Attribute key constraints: `PK`, `FK`, or `UK` only — never `PK_FK` or combined forms
 - For a field that is both PK and FK (e.g. a 1-to-1 join table key), use `PK`; the FK relationship is implied by the relationship line
 - Attribute types must be word characters only (`varchar`, `uuid`, `text`, `boolean`, `timestamptz`) — do not use `enum` as a type; use `varchar` instead
-- Quoted comments after the key constraint are optional; avoid `|` inside them as it can confuse the parser
+- Quoted comments after the key constraint are optional; use **double quotes only** — single quotes are a syntax error in Mermaid 10 erDiagram (e.g. `"secretary or admin"` not `'secretary or admin'`)
+- Avoid `|` inside comments as it will break parsing — use ` or ` instead (e.g. `"secretary or admin"` not `"secretary|admin"`)
+- Only mark a field `UK` if it truly has a database unique constraint — do not use it to document allowed values (e.g. a `role` column that allows multiple rows per value must not be `UK`)
 
 **Deployment**:
 ```
