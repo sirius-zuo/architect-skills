@@ -367,6 +367,21 @@ graph LR
 
 All diagrams use `<div class="mermaid">` blocks. Common types:
 
+### ⚠️ Critical: Avoid parentheses in [("...")] and ("...") node labels
+
+Parentheses `(` `)` inside labels of **cylinder** `[("...")]` or **rounded** `("...")` nodes will break Mermaid parsing. These shapes use `(` and `)` as delimiters — so inner parens confuse the parser.
+
+```
+❌ AVS --> DB[("pgvector\n(PostgreSQL extension)")]       # broken!
+❌ AVS --> DB("pgvector\n(PostgreSQL extension)")          # broken!
+✅ AVS --> DB[("pgvector\nPostgreSQL extension")]          # remove parens
+✅ AVS --> DB["pgvector\n(PostgreSQL extension)"]          # or use ["..."] rectangle shape
+```
+
+Other shapes (`["..."]`, `{...}`, `((...))`, `[...]`) are fine with inner parentheses.
+
+**Always scan Mermaid output for parentheses inside cylinder/rounded labels before writing.**
+
 **Flowchart** (system context, application, integration):
 ```
 graph TB
