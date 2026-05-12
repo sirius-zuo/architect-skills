@@ -382,6 +382,40 @@ Other shapes (`["..."]`, `{...}`, `((...))`, `[...]`) are fine with inner parent
 
 **Always scan Mermaid output for parentheses inside cylinder/rounded labels before writing.**
 
+### ⚠️ Also: Special characters in bare [text] nodes need quoting
+
+Bare `[text]` node labels (no quotes around the text) cannot contain special characters: `(` `)` `/` `{` `}` `[` `]` `|` `&` `#` `<` `>`. When a label uses any of these, wrap it in double quotes: `["text"]`.
+
+```
+❌ OpenAI[OpenAI API\n(chat/completions)]                     # bare, has ( )
+❌ Slack[Slack\n(Bolt / WebSocket)]                          # bare, has ( ) /
+✅ OpenAI["OpenAI API\n(chat/completions)"]                   # quoted
+✅ Slack["Slack\n(Bolt / WebSocket)"]                          # quoted
+✅ SimpleNode[Just plain text]                                 # bare, no special chars — OK
+```
+
+This also applies to cylinder nodes: prefer `[("text")]` over `[(text)]` when the text contains `+`, `/`, or other special chars.
+
+**When in doubt, always use `["..."]` for node labels.**
+
+### ⚠️ Subgraph IDs must not collide with node IDs
+
+Mermaid can get confused when a subgraph ID matches a node ID. Example:
+
+```
+❌ subgraph avs-core["avs-core (Foundation)"]
+     Agent[Agent]
+   end
+   avs-react --> avs-core   # avs-core is BOTH a subgraph and creates a node!
+
+✅ subgraph sg-avs-core["avs-core (Foundation)"]   # prefix avoids collision
+     Agent[Agent]
+   end
+   avs-react --> avs-core   # avs-core is now only a node ID
+```
+
+**Always use distinct prefixes for subgraph IDs** (e.g., `sg-`, `sub-`) to avoid collisions.
+
 **Flowchart** (system context, application, integration):
 ```
 graph TB
