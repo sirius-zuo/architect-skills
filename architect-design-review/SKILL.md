@@ -45,25 +45,9 @@ Always generate both:
 
 **System Context** — the system as a black box. Who uses it? What does it connect to?
 
-Example Mermaid:
-```
-graph TB
-  User([User]) --> Sys[Your System]
-  Sys --> DB[(Database)]
-  Sys --> ExtAPI[External API]
-```
-
 **Component diagram** — major internal components and how they relate. Use the actual component names from the spec.
 
-Example Mermaid:
-```
-graph LR
-  subgraph System
-    API[API Layer] --> Service[Business Logic]
-    Service --> Repo[Repository]
-    Repo --> DB[(Database)]
-  end
-```
+Use `["..."]` quoted form for ALL node labels to avoid special character issues:
 
 ## Step 5: Propose additional diagrams
 
@@ -73,15 +57,25 @@ Apply the rules from `../architect-shared/diagram-selection.md`. Send ONE messag
 
 Generate Mermaid.js code for core diagrams and each user-confirmed additional diagram. Use the syntax reference in `../architect-shared/html-template.md`.
 
-## Step 7: Evaluate the design
+## Step 7: Validate diagrams
+
+Before proceeding, scan all generated Mermaid code for common syntax errors documented in the template:
+- Parentheses inside `[("...")]` cylinder or `("...")` rounded node labels
+- Unquoted special characters in bare `[text]` node labels (always prefer `["..."]`)
+- Subgraph IDs colliding with node IDs (use distinct prefixes like `sg-` for subgraphs)
+- Bare `break` without `when` clause in sequence diagrams
+
+Fix any issues found before moving on.
+
+## Step 8: Evaluate the design
 
 Load `../architect-shared/architecture-principles.md`. Run four domain evaluations in order. Each produces a list of findings classified as Strength, Concern, or Risk.
 
-### Step 7a: Architecture
+### Step 8a: Architecture
 
 Evaluate against: Separation of Concerns, Cohesion and Coupling, Layered Architecture, Hexagonal Architecture / Ports and Adapters. Also check for Architectural Smells: god modules, missing abstraction layers, circular dependencies, tight coupling between business logic and infrastructure, missing error boundaries or observability hooks.
 
-### Step 7b: Security
+### Step 8b: Security
 
 Evaluate against the Security section of the principles:
 - AuthN/AuthZ: Is authentication enforced at the right layer? Is authorization centralized or scattered?
@@ -90,7 +84,7 @@ Evaluate against the Security section of the principles:
 - Data protection: Is encryption at rest and in transit accounted for? Are sensitive fields identified?
 - OWASP Top 10 signals: injection risks, broken access control, security misconfiguration, insecure design, vulnerable components, sensitive data exposure.
 
-### Step 7c: Scalability
+### Step 8c: Scalability
 
 Evaluate against the Scalability section of the principles:
 - Stateless services: Can instances be added horizontally without shared mutable state? Where is session/state stored?
@@ -100,7 +94,7 @@ Evaluate against the Scalability section of the principles:
 - Rate limiting and backpressure: Is the system protected from traffic spikes?
 - Capacity headroom: Are there obvious bottlenecks (N+1 queries, unbounded queues, single-threaded workers)?
 
-### Step 7d: Reliability
+### Step 8d: Reliability
 
 Evaluate against the Reliability section of the principles:
 - Graceful degradation: Does the system define behavior when a dependency is unavailable?
@@ -109,7 +103,7 @@ Evaluate against the Reliability section of the principles:
 - Failover: Is there an active/passive or active/active setup for critical components?
 - Health checks: Are liveness and readiness probes defined for all services?
 
-## Step 8: Build the HTML report
+## Step 9: Build the HTML report
 
 Read `../architect-shared/html-template.md`. Fill in the design review template with:
 - **Executive summary** — 2-3 sentences on what the system is and key architectural choices
@@ -122,7 +116,7 @@ Read `../architect-shared/html-template.md`. Fill in the design review template 
 
 Use the nav links: `#summary`, `#diagrams`, `#architecture`, `#security`, `#scalability`, `#reliability`, `#recommendations`.
 
-## Step 9: Save the report
+## Step 10: Save the report
 
 ```bash
 mkdir -p docs/architecture/review
@@ -136,6 +130,6 @@ Save to: `docs/architecture/review/YYYY-MM-DD-<project>-design-architecture.html
 
 Confirm the saved path to the user.
 
-## Step 10: Report complete
+## Step 11: Report complete
 
 Confirm the saved path to the user. The orchestrating harness will determine the next step in the workflow.

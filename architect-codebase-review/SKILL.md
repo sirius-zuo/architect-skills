@@ -69,13 +69,23 @@ Apply rules from `../architect-shared/diagram-selection.md`. Send ONE message wi
 
 ## Step 7: Generate confirmed current-state diagrams
 
-Generate Mermaid.js for core diagrams plus each confirmed additional diagram. Use syntax reference in `../architect-shared/html-template.md`.
+Generate Mermaid.js for core diagrams plus each confirmed additional diagram. Use `["..."]` quoted form for ALL node labels to avoid special character issues. Use syntax reference in `../architect-shared/html-template.md`.
 
-## Step 8: Evaluate current architecture
+## Step 8: Validate diagrams
+
+Before proceeding, scan all generated Mermaid code for common syntax errors documented in the template:
+- Parentheses inside `[("...")]` cylinder or `("...")` rounded node labels
+- Unquoted special characters in bare `[text]` node labels (always prefer `["..."]`)
+- Subgraph IDs colliding with node IDs (use distinct prefixes like `sg-` for subgraphs)
+- Bare `break` without `when` clause in sequence diagrams
+
+Fix any issues found before moving on.
+
+## Step 9: Evaluate current architecture
 
 Load `../architect-shared/architecture-principles.md`. Run four domain evaluations in order. Each produces a list of findings classified as Strength, Concern, or Risk.
 
-### Step 8a: Architecture
+### Step 9a: Architecture
 
 Evaluate against: Separation of Concerns, Cohesion and Coupling, Layered Architecture, Hexagonal Architecture / Ports and Adapters. Also identify architectural smells:
 - God modules (one file/package doing everything)
@@ -84,7 +94,7 @@ Evaluate against: Separation of Concerns, Cohesion and Coupling, Layered Archite
 - Tight coupling between business logic and infrastructure
 - Missing error boundaries or observability hooks
 
-### Step 8b: Security
+### Step 9b: Security
 
 Evaluate against the Security section of the principles:
 - AuthN/AuthZ: Is authentication enforced at the right layer? Is authorization centralized or scattered?
@@ -93,7 +103,7 @@ Evaluate against the Security section of the principles:
 - Data protection: Is encryption at rest and in transit accounted for? Are sensitive fields identified?
 - OWASP Top 10 signals: injection risks, broken access control, security misconfiguration, insecure design, vulnerable components, sensitive data exposure.
 
-### Step 8c: Scalability
+### Step 9c: Scalability
 
 Evaluate against the Scalability section of the principles:
 - Stateless services: Can instances be added horizontally without shared mutable state? Where is session/state stored?
@@ -103,7 +113,7 @@ Evaluate against the Scalability section of the principles:
 - Rate limiting and backpressure: Is the system protected from traffic spikes?
 - Capacity headroom: Are there obvious bottlenecks (N+1 queries, unbounded queues, single-threaded workers)?
 
-### Step 8d: Reliability
+### Step 9d: Reliability
 
 Evaluate against the Reliability section of the principles:
 - Graceful degradation: Does the system define behavior when a dependency is unavailable?
@@ -112,11 +122,11 @@ Evaluate against the Reliability section of the principles:
 - Failover: Is there an active/passive or active/active setup for critical components?
 - Health checks: Are liveness and readiness probes defined for all services?
 
-## Step 9: Generate recommended architecture diagrams
+## Step 10: Generate recommended architecture diagrams
 
 For each current-state diagram, produce a revised version showing the recommended improvements. Only produce a revised diagram if the current state has issues — if a diagram looks sound, skip it. Label what changed.
 
-## Step 10: Build the HTML report
+## Step 11: Build the HTML report
 
 Read `../architect-shared/html-template.md`. Use the codebase review template with six sections:
 
@@ -129,7 +139,7 @@ Read `../architect-shared/html-template.md`. Use the codebase review template wi
 
 Use nav links: `#current`, `#architecture`, `#security`, `#scalability`, `#reliability`, `#recommended`.
 
-## Step 11: Save the report
+## Step 12: Save the report
 
 ```bash
 mkdir -p docs/architecture/review
@@ -142,3 +152,7 @@ Derive `<project>` from:
 Save to: `docs/architecture/review/YYYY-MM-DD-<project>-codebase-architecture.html`
 
 Confirm the saved path to the user.
+
+## Step 13: Report complete
+
+Confirm the saved path to the user. The orchestrating harness will determine the next step in the workflow.
