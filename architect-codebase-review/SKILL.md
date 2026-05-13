@@ -142,13 +142,3 @@ Derive `<project>` from:
 Save to: `docs/architecture/review/YYYY-MM-DD-<project>-codebase-architecture.html`
 
 Confirm the saved path to the user.
-
----
-
-After writing, verify and commit:
-```bash
-ls -la architect-codebase-review/SKILL.md
-head -5 architect-codebase-review/SKILL.md
-git add architect-codebase-review/SKILL.md
-git commit -m "feat: add architect-codebase-review skill"
-```

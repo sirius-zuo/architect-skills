@@ -139,18 +139,3 @@ Confirm the saved path to the user.
 ## Step 10: Report complete
 
 Confirm the saved path to the user. The orchestrating harness will determine the next step in the workflow.
-
----
-
-After writing, verify:
-```bash
-ls -la architect-design-review/SKILL.md
-head -5 architect-design-review/SKILL.md
-```
-Expected: first line is `---`
-
-Then commit:
-```bash
-git add architect-design-review/SKILL.md
-git commit -m "feat: add architect-design-review skill"
-```
