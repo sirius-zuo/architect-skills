@@ -1,6 +1,6 @@
 ---
 name: architect-design-review
-description: Use after superpowers:brainstorming approves a design spec and before writing-plans is invoked. Reviews the spec, generates architecture diagrams using Mermaid.js, evaluates against architecture principles, and produces an HTML report in docs/architecture/review/. Hands off to writing-plans when complete.
+description: Reviews a design spec, generates architecture diagrams using Mermaid.js, evaluates against architecture principles, and produces an HTML report in docs/architecture/review/.
 allowed-tools:
   - Read
   - Write
@@ -11,7 +11,7 @@ allowed-tools:
 
 # Architect Design Review
 
-Reviews an approved design spec, generates architecture diagrams, evaluates the design, produces an HTML report, then hands off to writing-plans.
+Reviews an approved design spec, generates architecture diagrams, evaluates the design, and produces an HTML report.
 
 ## Step 1: Read the spec
 
@@ -136,9 +136,9 @@ Save to: `docs/architecture/review/YYYY-MM-DD-<project>-design-architecture.html
 
 Confirm the saved path to the user.
 
-## Step 10: Hand off
+## Step 10: Report complete
 
-Invoke `writing-plans` to create the implementation plan from the approved spec.
+Confirm the saved path to the user. The orchestrating harness will determine the next step in the workflow.
 
 ---
 
