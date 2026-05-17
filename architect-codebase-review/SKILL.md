@@ -92,6 +92,8 @@ From what you observed, identify:
 - Data entities (from model/schema files)
 - Deployment configuration (Dockerfile, k8s YAML, cloud configs)
 
+**Context release:** After completing this mapping, discard raw Bash output and full file content from Steps 1–2 from context. Carry forward only the structured architectural summary produced in this step.
+
 ## Step 5: Generate core current-state diagrams
 
 Always generate both, reflecting the actual code — not an idealized version:
@@ -117,6 +119,8 @@ Before proceeding, scan all generated Mermaid code for common syntax errors docu
 - Bare `break` without `when` clause in sequence diagrams
 
 Fix any issues found before moving on.
+
+**Context release:** Discard intermediate diagram drafts and any raw file content still in context. Carry forward only the final validated Mermaid code blocks for each diagram.
 
 ## Step 9: Evaluate current architecture
 
@@ -158,6 +162,8 @@ Evaluate against the Reliability section of the principles:
 - Redundancy: Are there single points of failure (single DB, single app instance, single region)?
 - Failover: Is there an active/passive or active/active setup for critical components?
 - Health checks: Are liveness and readiness probes defined for all services?
+
+**Context release:** Discard the full text of `architecture-principles.md` from context. Carry forward only the classified finding list (Strength / Concern / Risk) per domain.
 
 ## Step 10: Generate recommended architecture diagrams
 
