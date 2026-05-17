@@ -68,6 +68,8 @@ From the spec, identify:
 - Data entities (if any)
 - User types / actors
 
+**Context release:** After completing this extraction, discard the raw spec text and any raw referenced document content from context. Carry forward only the structured project context summary produced in this step.
+
 ## Step 3: Load shared references
 
 Read both files:
@@ -103,6 +105,8 @@ Before proceeding, scan all generated Mermaid code for common syntax errors docu
 - Bare `break` without `when` clause in sequence diagrams
 
 Fix any issues found before moving on.
+
+**Context release:** Discard intermediate diagram drafts and raw shared reference file content. Carry forward only the final validated Mermaid code blocks for each diagram.
 
 ## Step 8: Evaluate the design
 
@@ -140,20 +144,31 @@ Evaluate against the Reliability section of the principles:
 - Failover: Is there an active/passive or active/active setup for critical components?
 - Health checks: Are liveness and readiness probes defined for all services?
 
+**Context release:** Discard the full text of `architecture-principles.md` from context. Carry forward only the classified finding list (Strength / Concern / Risk) per domain.
+
 ## Step 9: Build the HTML report
 
 Read `../architect-shared/html-template.md`. Fill in the design review template with:
 - **Executive summary** — 2-3 sentences on what the system is and key architectural choices
 - **Architecture diagrams** — each diagram in a `diagram-card` with title and one-line description
-- **Architecture** — findings from Step 7a as `finding` blocks
-- **Security** — findings from Step 7b as `finding` blocks
-- **Scalability** — findings from Step 7c as `finding` blocks
-- **Reliability** — findings from Step 7d as `finding` blocks
+- **Architecture** — findings from Step 8a as `finding` blocks
+- **Security** — findings from Step 8b as `finding` blocks
+- **Scalability** — findings from Step 8c as `finding` blocks
+- **Reliability** — findings from Step 8d as `finding` blocks
 - **Recommendations** — numbered actionable improvements synthesizing all domain findings
 
 Use the nav links: `#summary`, `#diagrams`, `#architecture`, `#security`, `#scalability`, `#reliability`, `#recommendations`.
 
 ## Step 10: Save the report
+
+Before saving, present the intended output path to the user:
+
+> "I will save the architecture report to:
+> `docs/architecture/review/[filename]`
+>
+> Confirm to proceed, or provide a different path."
+
+Wait for confirmation before running `mkdir` or writing the file.
 
 ```bash
 mkdir -p docs/architecture/review
@@ -166,6 +181,8 @@ Note: the Write call that saves the HTML report is **non-idempotent** — it ove
 Derive `<project>` from:
 1. `name` field in `package.json`, `go.mod`, or `Cargo.toml` if present
 2. Otherwise, the root directory name
+
+**Project name sanitization:** Before using the derived name in the file path, strip or reject: `/`, `\`, `..` sequences, null bytes (`\0`), and leading dots. If the name is empty after sanitization, log `Warning: project name contained unsafe characters; using directory name instead.` and fall back to the root directory name.
 
 Save to: `docs/architecture/review/YYYY-MM-DD-<project>-design-architecture.html`
 
