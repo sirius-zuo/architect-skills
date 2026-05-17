@@ -145,3 +145,27 @@ Additional diagrams proposed based on the project (user confirms before generati
 
 - Internet connection required to render diagrams (Mermaid.js loaded via CDN)
 - No other dependencies
+
+## Repository Structure
+
+```
+architect-skills/
+├── architect-codebase-review/   # Reviews existing codebases
+│   ├── SKILL.md                 # Skill definition and workflow
+│   └── RUNS.md                  # Manual run log (populate after each run)
+├── architect-design-review/     # Reviews design specs before implementation
+│   ├── SKILL.md
+│   └── RUNS.md
+├── architect-shared/            # Shared reference files (installed with skills)
+│   ├── architecture-principles.md
+│   ├── diagram-selection.md
+│   └── html-template.md
+├── tests/                       # Manual test scenarios (repo-only, not installed)
+│   ├── architect-codebase-review/scenarios.md
+│   └── architect-design-review/scenarios.md
+└── contracts/                   # Output contracts for downstream consumers (repo-only)
+    ├── architect-codebase-review.md
+    └── architect-design-review.md
+```
+
+`tests/` and `contracts/` are **not installed** by `install.sh` — they are reference material for maintainers. `RUNS.md` files are co-located with each skill for easy reference but are also not installed.
