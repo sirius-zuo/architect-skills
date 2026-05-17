@@ -46,11 +46,17 @@ If the spec appears large, summarize rather than read in full, and note this in 
 
 Find the most recently modified file in `docs/superpowers/specs/`:
 
+**Spec validation:** Before reading, verify:
+1. The directory `docs/superpowers/specs/` exists and contains at least one `.md` file. If not: `ERROR: No spec found in docs/superpowers/specs/. Create a spec file and retry. Stopping.`
+2. The selected spec file is non-empty and readable. If the Read fails or returns empty: `ERROR: Spec file [path] is empty or unreadable. Stopping.`
+
 ```bash
 ls -lt docs/superpowers/specs/ | head -5
 ```
 
 Read it fully. Read any documents it references.
+
+**Referenced document limits:** Maximum depth 1 (do not follow references within referenced documents). Maximum 3 referenced documents per run. If the spec references more than 3 documents, read the first 3 and note in the report: "Referenced but not read (limit reached): [list]." If a referenced document cannot be found, log `Warning: referenced document [path] not found — skipping.` and continue.
 
 ## Step 2: Extract project context
 
