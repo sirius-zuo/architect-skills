@@ -74,15 +74,24 @@ Read any found documents.
 
 If a Read call on any found document fails or returns empty, skip that document, log `Warning: could not read [path] — skipping.`, and continue with the remaining documents.
 
-## Step 3: Load shared references
+## Step 3: Validate discovered paths
+
+Before using any file path discovered in Steps 1–2:
+1. Resolve each path to its canonical form — no `../` components, no unresolved symlinks.
+2. Verify the resolved path starts with the confirmed codebase root directory.
+3. If a path escapes the root, skip it and log: `Warning: skipping [path] — outside codebase root.`
+
+Do not read or process any file whose canonical path is outside the confirmed codebase root.
+
+## Step 4: Load shared references
 
 Read both files:
 - `../architect-shared/architecture-principles.md`
 - `../architect-shared/diagram-selection.md`
 
-If either file cannot be read, halt immediately: `ERROR: Step 3 — could not read [filename]. The architect-shared/ directory may be missing or misconfigured. Stopping.`
+If either file cannot be read, halt immediately: `ERROR: Step 4 — could not read [filename]. The architect-shared/ directory may be missing or misconfigured. Stopping.`
 
-## Step 4: Map current architecture
+## Step 5: Map current architecture
 
 From what you observed, identify:
 - System boundary and external actors
@@ -94,7 +103,7 @@ From what you observed, identify:
 
 **Context release:** After completing this mapping, discard raw Bash output and full file content from Steps 1–2 from context. Carry forward only the structured architectural summary produced in this step.
 
-## Step 5: Generate core current-state diagrams
+## Step 6: Generate core current-state diagrams
 
 Always generate both, reflecting the actual code — not an idealized version:
 
@@ -102,15 +111,15 @@ Always generate both, reflecting the actual code — not an idealized version:
 
 **Component diagram** — actual modules/packages as they exist, with their real relationships including any problematic ones (god modules, circular deps).
 
-## Step 6: Propose additional current-state diagrams
+## Step 7: Propose additional current-state diagrams
 
 Apply rules from `../architect-shared/diagram-selection.md`. Send ONE message with the proposed list and one-line reasons. Wait for user confirmation.
 
-## Step 7: Generate confirmed current-state diagrams
+## Step 8: Generate confirmed current-state diagrams
 
 Generate Mermaid.js for core diagrams plus each confirmed additional diagram. Use `["..."]` quoted form for ALL node labels to avoid special character issues. Use syntax reference in `../architect-shared/html-template.md`.
 
-## Step 8: Validate diagrams
+## Step 9: Validate diagrams
 
 Before proceeding, scan all generated Mermaid code for common syntax errors documented in the template:
 - Parentheses inside `[("...")]` cylinder or `("...")` rounded node labels
@@ -122,11 +131,11 @@ Fix any issues found before moving on.
 
 **Context release:** Discard intermediate diagram drafts and any raw file content still in context. Carry forward only the final validated Mermaid code blocks for each diagram.
 
-## Step 9: Evaluate current architecture
+## Step 10: Evaluate current architecture
 
 Load `../architect-shared/architecture-principles.md`. Run four domain evaluations in order. Each produces a list of findings classified as Strength, Concern, or Risk.
 
-### Step 9a: Architecture
+### Step 10a: Architecture
 
 Evaluate against: Separation of Concerns, Cohesion and Coupling, Layered Architecture, Hexagonal Architecture / Ports and Adapters. Also identify architectural smells:
 - God modules (one file/package doing everything)
@@ -135,7 +144,7 @@ Evaluate against: Separation of Concerns, Cohesion and Coupling, Layered Archite
 - Tight coupling between business logic and infrastructure
 - Missing error boundaries or observability hooks
 
-### Step 9b: Security
+### Step 10b: Security
 
 Evaluate against the Security section of the principles:
 - AuthN/AuthZ: Is authentication enforced at the right layer? Is authorization centralized or scattered?
@@ -144,7 +153,7 @@ Evaluate against the Security section of the principles:
 - Data protection: Is encryption at rest and in transit accounted for? Are sensitive fields identified?
 - OWASP Top 10 signals: injection risks, broken access control, security misconfiguration, insecure design, vulnerable components, sensitive data exposure.
 
-### Step 9c: Scalability
+### Step 10c: Scalability
 
 Evaluate against the Scalability section of the principles:
 - Stateless services: Can instances be added horizontally without shared mutable state? Where is session/state stored?
@@ -154,7 +163,7 @@ Evaluate against the Scalability section of the principles:
 - Rate limiting and backpressure: Is the system protected from traffic spikes?
 - Capacity headroom: Are there obvious bottlenecks (N+1 queries, unbounded queues, single-threaded workers)?
 
-### Step 9d: Reliability
+### Step 10d: Reliability
 
 Evaluate against the Reliability section of the principles:
 - Graceful degradation: Does the system define behavior when a dependency is unavailable?
@@ -165,41 +174,52 @@ Evaluate against the Reliability section of the principles:
 
 **Context release:** Discard the full text of `architecture-principles.md` from context. Carry forward only the classified finding list (Strength / Concern / Risk) per domain.
 
-## Step 10: Generate recommended architecture diagrams
+## Step 11: Generate recommended architecture diagrams
 
 For each current-state diagram, produce a revised version showing the recommended improvements. Only produce a revised diagram if the current state has issues — if a diagram looks sound, skip it. Label what changed.
 
-## Step 11: Build the HTML report
+## Step 12: Build the HTML report
 
 Read `../architect-shared/html-template.md`. Use the codebase review template with six sections:
 
 - **Current Architecture** — all current-state diagrams in `diagram-card` blocks with narrative
-- **Architecture** — findings from Step 8a as `finding` blocks
-- **Security** — findings from Step 8b as `finding` blocks
-- **Scalability** — findings from Step 8c as `finding` blocks
-- **Reliability** — findings from Step 8d as `finding` blocks
+- **Architecture** — findings from Step 10a as `finding` blocks
+- **Security** — findings from Step 10b as `finding` blocks
+- **Scalability** — findings from Step 10c as `finding` blocks
+- **Reliability** — findings from Step 10d as `finding` blocks
 - **Recommended Architecture** — revised diagrams, numbered actionable changes (synthesizing all domain findings), migration notes
 
 Use nav links: `#current`, `#architecture`, `#security`, `#scalability`, `#reliability`, `#recommended`.
 
-## Step 12: Save the report
+## Step 13: Save the report
+
+Before saving, present the intended output path to the user:
+
+> "I will save the architecture report to:
+> `docs/architecture/review/[filename]`
+>
+> Confirm to proceed, or provide a different path."
+
+Wait for confirmation before running `mkdir` or writing the file.
 
 ```bash
 mkdir -p docs/architecture/review
 ```
 
-If the `mkdir` command fails, halt: `ERROR: Step 12 — could not create docs/architecture/review/. Check write permissions. Stopping.`
+If the `mkdir` command fails, halt: `ERROR: Step 13 — could not create docs/architecture/review/. Check write permissions. Stopping.`
 
-Note: the Write call that saves the HTML report is **non-idempotent** — it overwrites any existing file at this path. If the Write fails, halt: `ERROR: Step 12 — failed to write report to [path]. Check write permissions on docs/architecture/review/. Stopping.`
+Note: the Write call that saves the HTML report is **non-idempotent** — it overwrites any existing file at this path. If the Write fails, halt: `ERROR: Step 13 — failed to write report to [path]. Check write permissions on docs/architecture/review/. Stopping.`
 
 Derive `<project>` from:
 1. `name` field in `package.json`, `go.mod`, or `Cargo.toml` if present
 2. Otherwise, the root directory name
 
+**Project name sanitization:** Before using the derived name in the file path, strip or reject: `/`, `\`, `..` sequences, null bytes (`\0`), and leading dots. If the name is empty after sanitization, or if sanitization changed it significantly, log `Warning: project name contained unsafe characters; using directory name instead.` and fall back to the root directory name.
+
 Save to: `docs/architecture/review/YYYY-MM-DD-<project>-codebase-architecture.html`
 
 Confirm the saved path to the user.
 
-## Step 13: Report complete
+## Step 14: Report complete
 
 Confirm the saved path to the user. The orchestrating harness will determine the next step in the workflow.
