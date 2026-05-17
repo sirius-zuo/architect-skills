@@ -61,6 +61,8 @@ find . -not -path '*/\.*' -not -path '*/node_modules/*' \( -name '*.go' -o -name
 
 Read the top-level README.md if it exists.
 
+If any Bash command in this step fails (non-zero exit code) or returns empty output unexpectedly, note the failure and continue with available information — do not halt for optional discovery commands. If the Read on README.md fails, skip it and continue.
+
 ## Step 2: Read existing architecture documents
 
 ```bash
@@ -70,11 +72,15 @@ find . -path "*/docs/*.md" -not -path '*/node_modules/*' 2>/dev/null | head -15
 
 Read any found documents.
 
+If a Read call on any found document fails or returns empty, skip that document, log `Warning: could not read [path] — skipping.`, and continue with the remaining documents.
+
 ## Step 3: Load shared references
 
 Read both files:
 - `../architect-shared/architecture-principles.md`
 - `../architect-shared/diagram-selection.md`
+
+If either file cannot be read, halt immediately: `ERROR: Step 3 — could not read [filename]. The architect-shared/ directory may be missing or misconfigured. Stopping.`
 
 ## Step 4: Map current architecture
 
@@ -175,6 +181,10 @@ Use nav links: `#current`, `#architecture`, `#security`, `#scalability`, `#relia
 ```bash
 mkdir -p docs/architecture/review
 ```
+
+If the `mkdir` command fails, halt: `ERROR: Step 12 — could not create docs/architecture/review/. Check write permissions. Stopping.`
+
+Note: the Write call that saves the HTML report is **non-idempotent** — it overwrites any existing file at this path. If the Write fails, halt: `ERROR: Step 12 — failed to write report to [path]. Check write permissions on docs/architecture/review/. Stopping.`
 
 Derive `<project>` from:
 1. `name` field in `package.json`, `go.mod`, or `Cargo.toml` if present
