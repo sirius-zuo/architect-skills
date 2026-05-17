@@ -74,6 +74,8 @@ Read both files:
 - `../architect-shared/architecture-principles.md`
 - `../architect-shared/diagram-selection.md`
 
+If either file cannot be read, halt immediately: `ERROR: Step 3 — could not read [filename]. The architect-shared/ directory may be missing or misconfigured. Stopping.`
+
 ## Step 4: Generate core diagrams
 
 Always generate both:
@@ -156,6 +158,10 @@ Use the nav links: `#summary`, `#diagrams`, `#architecture`, `#security`, `#scal
 ```bash
 mkdir -p docs/architecture/review
 ```
+
+If `mkdir` fails, halt: `ERROR: Step 10 — could not create docs/architecture/review/. Check write permissions. Stopping.`
+
+Note: the Write call that saves the HTML report is **non-idempotent** — it overwrites any existing file at this path. If the Write fails, halt: `ERROR: Step 10 — failed to write report to [path]. Check write permissions on docs/architecture/review/. Stopping.`
 
 Derive `<project>` from:
 1. `name` field in `package.json`, `go.mod`, or `Cargo.toml` if present
