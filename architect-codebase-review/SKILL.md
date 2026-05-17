@@ -29,6 +29,22 @@ This skill:
 - Never evaluates design specs — use `architect-design-review` for pre-implementation review
 - Produces one read-only HTML report and creates one directory (`docs/architecture/review/`); all other filesystem operations are read-only
 
+## Invocation
+
+**Arguments:**
+- `[target-directory]` (optional) — path to the codebase root to review. Defaults to the current working directory.
+
+**Pre-flight check:** Before starting, verify you are in or have been pointed to a directory containing a software project. If the directory is empty or contains no recognizable source files after Step 1, halt with: `ERROR: No recognizable source files found in [directory]. Point me at a codebase directory to review. Stopping.`
+
+## Performance
+
+Token usage scales with codebase size:
+- **Small** (<5k LOC): light — typically completes in one context window with no special handling.
+- **Medium** (5k–50k LOC): moderate — context management steps activate between phases.
+- **Large** (>50k LOC): heavy — summarization required; plan for the skill to take longer and consume more tokens.
+
+If the codebase appears large, summarize rather than read fully and note this in the report.
+
 ## Step 1: Explore codebase structure
 
 ```bash
