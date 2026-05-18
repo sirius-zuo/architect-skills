@@ -30,7 +30,7 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Architecture Review — {PROJECT_NAME}</title>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
   <script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -415,6 +415,31 @@ Mermaid can get confused when a subgraph ID matches a node ID. Example:
 ```
 
 **Always use distinct prefixes for subgraph IDs** (e.g., `sg-`, `sub-`) to avoid collisions.
+
+**Class diagram** (types, interfaces, relationships):
+```
+classDiagram
+    class MyClass {
+        +field: String
+        +method() ReturnType
+    }
+    class MyEnum {
+        Value1
+        Value2
+    }
+    class MyInterface {
+        +method() void
+    }
+    MyClass --> MyEnum : uses
+
+    %% CRITICAL: For <<enumeration>> and <<interface>> annotations,
+    %% do NOT put << >> inside class bodies. Mermaid v11 parses >> as HTML
+    %% closing tags and breaks. Use classDef at the bottom instead:
+    classDef enum fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef iface fill:#fff3e0,stroke:#e65100,stroke-width:2px;
+    class MyEnum enum
+    class MyInterface iface
+```
 
 **Flowchart** (system context, application, integration):
 ```
