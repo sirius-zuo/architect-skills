@@ -144,6 +144,42 @@ Evaluate against the Reliability section of the principles:
 - Failover: Is there an active/passive or active/active setup for critical components?
 - Health checks: Are liveness and readiness probes defined for all services?
 
+### Step 8e: Anti-Patterns
+
+Evaluate against the Common Anti-Patterns section of the principles. Only flag patterns that are applicable to the design level:
+- Shared Database as Integration Hub: Are services sharing database tables/schemas as an integration mechanism?
+- Distributed Monolith: Do microservices still share state, call each other in lockstep, or deploy as a single unit?
+- Point-to-Point Coupling: Is there an N² dependency graph with no API gateway or event bus?
+- Leaky Abstraction: Are implementation details (DB schema, third-party response shapes) exposed through layer boundaries?
+- Point-to-Point Async: Do consumers each maintain their own direct connection to producers?
+- Missing Anti-Corruption Layer: Are third-party or legacy models used directly inside the domain?
+- Big Ball of Mud: Are there no identifiable boundaries? (Codebase-only — not applicable in design review; skip if design has clear boundaries)
+- Tight Coupling Through Shared Libraries: Do services depend on a shared library without versioning or backward-compatibility guarantees?
+
+Note: Skip "Big Ball of Mud" in design review unless the design itself shows no structural discipline. The other anti-patterns apply to both design and codebase reviews.
+
+### Step 8f: Testability
+
+Evaluate against the Testability section of the principles:
+- Injectable dependencies: Can components be tested with mock/stub dependencies via constructor injection?
+- Domain-infra test boundary: Is there a clear separation for unit-testing domain logic vs integration-testing infrastructure?
+- Testable integration points: Are all external interactions (APIs, databases, message queues) mockable or stubbable at the boundary?
+- Independent test execution: Can tests run in parallel without shared mutable state?
+- Staging-to-production fidelity: Can the system be deployed in a staging environment that mirrors production?
+- Fitness functions: Are there automated checks enforcing architectural quality (dependency rules, coupling limits)?
+- Deterministic behavior: Are timing-dependent paths (retries, timeouts, race conditions) testable?
+- Feature flags: Can risky features be deployed and controlled without code changes?
+
+### Step 8g: Evolvability
+
+Evaluate against the Evolvability section of the principles:
+- Stable boundaries with mutable internals: Do module/service boundaries allow internal changes without breaking consumers?
+- Configuration-driven behavior: Is behavior driven by configuration (feature flags, routing tables) rather than code changes?
+- Identified extension points: Are places for new capabilities explicitly designed (plug-in patterns, strategy interfaces, event hooks)?
+- Versioning strategy: Is there a strategy for versioning APIs and data schemas with backward-compatible evolution?
+- Independent module releases: Can new capabilities be added without coordinated releases across modules?
+- Behavior over structure: Is the system structured around capabilities/workflows rather than data entities/technical layers?
+
 **Context release:** Discard the full text of `architecture-principles.md` from context. Carry forward only the classified finding list (Strength / Concern / Risk) per domain.
 
 ## Step 9: Build the HTML report
@@ -155,9 +191,12 @@ Read `../architect-shared/html-template.md`. Fill in the design review template 
 - **Security** — findings from Step 8b as `finding` blocks
 - **Scalability** — findings from Step 8c as `finding` blocks
 - **Reliability** — findings from Step 8d as `finding` blocks
+- **Anti-Patterns** — findings from Step 8e as `finding` blocks
+- **Testability** — findings from Step 8f as `finding` blocks
+- **Evolvability** — findings from Step 8g as `finding` blocks
 - **Recommendations** — numbered actionable improvements synthesizing all domain findings
 
-Use the nav links: `#summary`, `#diagrams`, `#architecture`, `#security`, `#scalability`, `#reliability`, `#recommendations`.
+Use the nav links: `#summary`, `#diagrams`, `#architecture`, `#security`, `#scalability`, `#reliability`, `#antipatterns`, `#testability`, `#evolvability`, `#recommendations`.
 
 ## Step 10: Save the report
 

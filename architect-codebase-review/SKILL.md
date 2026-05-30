@@ -172,6 +172,40 @@ Evaluate against the Reliability section of the principles:
 - Failover: Is there an active/passive or active/active setup for critical components?
 - Health checks: Are liveness and readiness probes defined for all services?
 
+### Step 10e: Anti-Patterns
+
+Evaluate against the Common Anti-Patterns section of the principles. All patterns apply in codebase review:
+- Shared Database as Integration Hub: Multiple services writing to the same tables/schemas; cross-service SQL joins; shared schema migrations.
+- Distributed Monolith: Services calling each other in lockstep; services deployed together; no independent deployability.
+- Point-to-Point Coupling: Service A has direct connections to many other services; changing one service requires changes in half the codebase.
+- Leaky Abstraction: API responses mirroring database column names; domain models with infrastructure-specific fields; error messages exposing internal paths.
+- Point-to-Point Async: Each consumer maintains its own direct connection to producers; adding a new event requires changes in every consumer.
+- Missing Anti-Corruption Layer: Domain entities with fields named after external API parameters; domain logic transforming third-party formats.
+- Big Ball of Mud: One file is 5000+ lines; every function imports from every other module; no package/module structure.
+- Tight Coupling Through Shared Libraries: Services importing a monorepo package; breaking releases require coordinated changes across services.
+
+### Step 10f: Testability
+
+Evaluate against the Testability section of the principles:
+- Injectable dependencies: Can components be tested with mock/stub dependencies via constructor injection?
+- Domain-infra test boundary: Is there a clear separation for unit-testing domain logic vs integration-testing infrastructure?
+- Testable integration points: Are all external interactions (APIs, databases, message queues) mockable or stubbable at the boundary?
+- Independent test execution: Can tests run in parallel without shared mutable state or database contention?
+- Staging-to-production fidelity: Can the system be deployed in a staging environment that mirrors production configuration?
+- Fitness functions: Are there automated checks enforcing architectural quality (dependency rules, coupling limits, test coverage thresholds)?
+- Deterministic behavior: Are timing-dependent paths (retries, timeouts, race conditions) testable with controllable clock or mock time?
+- Feature flags for risky changes: Can risky features be deployed and controlled without code changes, allowing gradual rollout and quick rollback?
+
+### Step 10g: Evolvability
+
+Evaluate against the Evolvability section of the principles:
+- Stable boundaries with mutable internals: Do module/service boundaries allow internal implementation changes without breaking consumers?
+- Configuration-driven behavior: Is behavior driven by configuration (feature flags, routing tables, strategy selection) rather than code changes?
+- Identified extension points: Are places where new capabilities will be added explicitly designed (plug-in patterns, strategy interfaces, event hooks)?
+- Versioning strategy: Is there a strategy for versioning APIs and data schemas that supports backward-compatible evolution and defined deprecation windows?
+- Independent module releases: Can new capabilities be added to one module without requiring coordinated releases across other modules?
+- Behavior over structure: Is the system structured around what it does (capabilities, workflows) rather than what it is (data entities, technical layers)?
+
 **Context release:** Discard the full text of `architecture-principles.md` from context. Carry forward only the classified finding list (Strength / Concern / Risk) per domain.
 
 ## Step 11: Generate recommended architecture diagrams
@@ -180,16 +214,19 @@ For each current-state diagram, produce a revised version showing the recommende
 
 ## Step 12: Build the HTML report
 
-Read `../architect-shared/html-template.md`. Use the codebase review template with six sections:
+Read `../architect-shared/html-template.md`. Use the codebase review template with nine sections:
 
 - **Current Architecture** — all current-state diagrams in `diagram-card` blocks with narrative
 - **Architecture** — findings from Step 10a as `finding` blocks
 - **Security** — findings from Step 10b as `finding` blocks
 - **Scalability** — findings from Step 10c as `finding` blocks
 - **Reliability** — findings from Step 10d as `finding` blocks
+- **Anti-Patterns** — findings from Step 10e as `finding` blocks
+- **Testability** — findings from Step 10f as `finding` blocks
+- **Evolvability** — findings from Step 10g as `finding` blocks
 - **Recommended Architecture** — revised diagrams, numbered actionable changes (synthesizing all domain findings), migration notes
 
-Use nav links: `#current`, `#architecture`, `#security`, `#scalability`, `#reliability`, `#recommended`.
+Use nav links: `#current`, `#architecture`, `#security`, `#scalability`, `#reliability`, `#antipatterns`, `#testability`, `#evolvability`, `#recommended`.
 
 ## Step 13: Save the report
 
