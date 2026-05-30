@@ -185,3 +185,15 @@ Use when describing architecture at different levels of abstraction:
 - **God service** — one service class or module handling everything
 - **Leaky abstraction** — implementation details leaking through interfaces
 - **Missing anti-corruption layer** — third-party models used directly in domain
+
+## When to Look Deeper
+
+These principles cover structural quality attributes that apply to any system. For specialized domains, findings from these sections may reveal gaps that need deeper review:
+
+- **AI/LLM systems** — Review for model strategy decisions (API vs self-hosted), context management (short-term vs long-term memory, vector databases), prompt pipeline design, and AI-specific observability (data drift, concept drift, model SLOs, hallucination detection)
+- **Event-driven systems** — Review event versioning, schema registries (Avro/Protobuf), dead-letter queues, and consumer lag monitoring — beyond the point-to-point async check in Anti-Patterns
+- **High-scale read/write divergence** — Review CQRS suitability, event sourcing, and separate read/write model optimization
+- **Multi-agent systems** — Review agent coordination patterns (centralized vs decentralized orchestration), stochastic-boundary composition, and agent-specific reliability patterns
+- **Serverless-first deployments** — Review cold-start impact on latency-sensitive paths, vendor lock-in risk, platform-specific service dependencies, and debugging async event chains
+
+For these domains, the structural principles above still apply — but they are a starting point, not the full review.
