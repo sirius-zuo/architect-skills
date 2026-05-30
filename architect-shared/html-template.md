@@ -11,6 +11,9 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
 - Security
 - Scalability
 - Reliability
+- Anti-Patterns
+- Testability
+- Evolvability
 - Recommendations
 
 **For `architect-codebase-review`:**
@@ -19,6 +22,9 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
 - Security
 - Scalability
 - Reliability
+- Anti-Patterns
+- Testability
+- Evolvability
 - Recommended Architecture (revised diagrams + migration notes)
 
 ## Full HTML template
@@ -175,6 +181,9 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
     <a href="#security">Security</a>
     <a href="#scalability">Scalability</a>
     <a href="#reliability">Reliability</a>
+    <a href="#antipatterns">Anti-Patterns</a>
+    <a href="#testability">Testability</a>
+    <a href="#evolvability">Evolvability</a>
     <a href="#recommendations">Recommendations</a>
 
     <!-- Codebase review nav (replace above with this):
@@ -183,6 +192,9 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
     <a href="#security">Security</a>
     <a href="#scalability">Scalability</a>
     <a href="#reliability">Reliability</a>
+    <a href="#antipatterns">Anti-Patterns</a>
+    <a href="#testability">Testability</a>
+    <a href="#evolvability">Evolvability</a>
     <a href="#recommended">Recommended Architecture</a>
     -->
   </nav>
@@ -293,6 +305,33 @@ graph LR
       </div>
     </section>
 
+    <section id="antipatterns">
+      <h2>Anti-Patterns</h2>
+      <div class="findings">
+
+        <!-- Add finding blocks here -->
+
+      </div>
+    </section>
+
+    <section id="testability">
+      <h2>Testability</h2>
+      <div class="findings">
+
+        <!-- Add finding blocks here -->
+
+      </div>
+    </section>
+
+    <section id="evolvability">
+      <h2>Evolvability</h2>
+      <div class="findings">
+
+        <!-- Add finding blocks here -->
+
+      </div>
+    </section>
+
     <section id="recommendations" class="recommendations">
       <h2>Recommendations</h2>
       <div class="card">
@@ -337,6 +376,27 @@ graph LR
 
     <section id="reliability">
       <h2>Reliability</h2>
+      <div class="findings">
+        [finding blocks]
+      </div>
+    </section>
+
+    <section id="antipatterns">
+      <h2>Anti-Patterns</h2>
+      <div class="findings">
+        [finding blocks]
+      </div>
+    </section>
+
+    <section id="testability">
+      <h2>Testability</h2>
+      <div class="findings">
+        [finding blocks]
+      </div>
+    </section>
+
+    <section id="evolvability">
+      <h2>Evolvability</h2>
       <div class="findings">
         [finding blocks]
       </div>

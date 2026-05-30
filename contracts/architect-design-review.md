@@ -37,6 +37,9 @@ The output HTML file is guaranteed to contain these anchors, in this order:
 | `#security` | Security domain findings |
 | `#scalability` | Scalability domain findings |
 | `#reliability` | Reliability domain findings |
+| `#antipatterns` | Anti-patterns findings |
+| `#testability` | Testability domain findings |
+| `#evolvability` | Evolvability domain findings |
 | `#recommendations` | Numbered actionable improvements synthesizing all domain findings |
 
 ## Side effects

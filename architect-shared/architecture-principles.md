@@ -92,6 +92,76 @@ High-availability focused.
 - **Failover** — Is there an active/passive or active/active setup for critical components?
 - **Health checks** — Are liveness and readiness probes defined for all services? Does the load balancer use them?
 
+## Common Anti-Patterns
+
+These are recurring design decisions that look reasonable locally but cause systemic problems. Evaluate against these in both design and codebase reviews.
+
+### Shared Database as Integration Hub
+Two or more services write to the same database tables or schemas, using the database as a message bus instead of proper APIs or events.
+**Signals:** Multiple services importing the same ORM model; cross-service SQL joins; shared schema migrations.
+**Impact:** Hidden coupling spreads failures across unrelated services. No team owns the boundary.
+
+### Distributed Monolith
+Microservices that still share state, call each other in lockstep (synchronous chains), or are deployed as a single unit. The operational complexity of microservices without the benefits.
+**Signals:** Service A calls Service B calls Service C in a single request; services deployed together; no independent deployability.
+**Impact:** You pay microservices costs (network, latency, operational overhead) but can't get microservices benefits (independent scaling, team autonomy).
+
+### Point-to-Point Coupling (Spaghetti Architecture)
+Every service connects directly to every other service it needs, creating an N² dependency graph. No API gateway, no event bus, no centralized integration layer.
+**Signals:** Service A has direct HTTP connections to 15+ other services; changing one service requires changes in half the codebase.
+**Impact:** Impossible to understand impact of changes. Adding a new service requires updating every existing service that might need it.
+
+### Leaky Abstraction
+Implementation details of one layer (database schema, third-party API response shapes, infrastructure constraints) are exposed through the boundaries of other layers.
+**Signals:** API responses that mirror database column names; domain models that include infrastructure-specific fields; error messages exposing internal paths.
+**Impact:** Can't swap implementations without breaking consumers. Vendor lock-in.
+
+### Point-to-Point Async
+Every consumer maintains its own direct connection to every producer it needs data from. No central event bus. No canonical event definitions.
+**Signals:** Service A connects directly to Kafka topics from 5 different producers; adding a new event requires changes in every consumer.
+**Impact:** Event storms — adding one new event type requires modifying every service that might care about it. Missed messages when consumers go offline.
+
+### Missing Anti-Corruption Layer
+Third-party models, legacy data formats, or external service response shapes are used directly inside the domain layer.
+**Signals:** Domain entities with fields named after external API parameters; domain logic that transforms third-party date formats.
+**Impact:** Vendor lock-in. If the external service changes its contract, your domain breaks.
+
+### Big Ball of Mud
+No identifiable boundaries. Everything calls everything. The system has grown organically without any architectural discipline.
+**Signals:** One file is 5000+ lines; every function imports from every other module; no package/module structure.
+**Impact:** No developer can understand more than a small piece. Every change risks regressions.
+
+### Tight Coupling Through Shared Libraries
+Two or more independent services depend on a shared library that is developed and released without versioning or backward-compatibility guarantees.
+**Signals:** Services import a monorepo package; a breaking release of the shared library requires coordinated changes across services.
+**Impact:** Teams coordinate releases unnecessarily. One team's bug forces a rollback on all dependents.
+
+## Testability
+
+The architecture should enable fast, reliable, and isolated testing. If a design makes testing harder, the boundaries are wrong.
+
+**Check for:**
+- **Injectable dependencies** — Can every component be tested with mock or stub dependencies via constructor injection (not global state or service locators)?
+- **Domain-infra test boundary** — Is there a clear separation where domain logic can be tested with simple unit tests while infrastructure is tested separately with integration tests?
+- **Testable integration points** — Are all external interactions (APIs, databases, message queues) mockable or stubbable at the boundary?
+- **Independent test execution** — Can tests run in parallel without shared mutable state or database contention?
+- **Staging-to-production fidelity** — Can the system be deployed in a staging environment that accurately mirrors production configuration (network, dependencies, feature flags)?
+- **Fitness functions** — Are there automated checks that enforce architectural quality (e.g., dependency direction rules, coupling limits, test coverage thresholds)?
+- **Deterministic behavior** — Are timing-dependent paths (retries, timeouts, race conditions) testable with controllable clock or mock time?
+- **Feature flags for risky changes** — Can risky features be deployed and controlled without code changes, allowing gradual rollout and quick rollback?
+
+## Evolvability
+
+The architecture should allow changes to requirements and capabilities without rewriting existing code. A system can be scalable but completely unmaintainable when requirements shift.
+
+**Check for:**
+- **Stable boundaries with mutable internals** — Do module/service boundaries allow internal implementation changes without breaking consumers? (Open/Closed Principle)
+- **Configuration-driven behavior** — Is behavior driven by configuration (feature flags, routing tables, strategy selection) rather than code changes?
+- **Identified extension points** — Are places where new capabilities will be added explicitly designed (plug-in patterns, strategy interfaces, event hooks)?
+- **Versioning strategy** — Is there a strategy for versioning APIs and data schemas that supports backward-compatible evolution and defined deprecation windows?
+- **Independent module releases** — Can new capabilities be added to one module without requiring coordinated releases across other modules?
+- **Behavior over structure** — Is the system structured around *what it does* (capabilities, workflows) rather than *what it is* (data entities, technical layers)?
+
 ## C4 Model Vocabulary (for communication)
 
 Use when describing architecture at different levels of abstraction:
@@ -108,10 +178,22 @@ Use when describing architecture at different levels of abstraction:
 - **Repository** — abstraction for data access
 - **Domain Service** — stateless operation that doesn't belong on an entity
 
-## Architectural Smells (codebase review)
+## Architectural Smells (codebase review only — not applicable in design review)
 
 - **Anemic domain model** — domain objects with no behavior, only data
 - **Smart UI / dumb domain** — all logic in controllers or UI components
 - **God service** — one service class or module handling everything
 - **Leaky abstraction** — implementation details leaking through interfaces
 - **Missing anti-corruption layer** — third-party models used directly in domain
+
+## When to Look Deeper
+
+These principles cover structural quality attributes that apply to any system. For specialized domains, findings from these sections may reveal gaps that need deeper review:
+
+- **AI/LLM systems** — Review for model strategy decisions (API vs self-hosted), context management (short-term vs long-term memory, vector databases), prompt pipeline design, and AI-specific observability (data drift, concept drift, model SLOs, hallucination detection)
+- **Event-driven systems** — Review event versioning, schema registries (Avro/Protobuf), dead-letter queues, and consumer lag monitoring — beyond the point-to-point async check in Anti-Patterns
+- **High-scale read/write divergence** — Review CQRS suitability, event sourcing, and separate read/write model optimization
+- **Multi-agent systems** — Review agent coordination patterns (centralized vs decentralized orchestration), stochastic-boundary composition, and agent-specific reliability patterns
+- **Serverless-first deployments** — Review cold-start impact on latency-sensitive paths, vendor lock-in risk, platform-specific service dependencies, and debugging async event chains
+
+For these domains, the structural principles above still apply — but they are a starting point, not the full review.
