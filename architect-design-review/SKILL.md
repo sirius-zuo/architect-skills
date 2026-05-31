@@ -101,6 +101,7 @@ Generate Mermaid.js code for core diagrams and each user-confirmed additional di
 Before proceeding, scan all generated Mermaid code for common syntax errors documented in the template:
 - Parentheses inside `[("...")]` cylinder or `("...")` rounded node labels
 - Unquoted special characters in bare `[text]` node labels (always prefer `["..."]`)
+- Double quotes inside edge labels `|"..."|` — use single quotes instead: `|'file-changed'|`
 - Subgraph IDs colliding with node IDs (use distinct prefixes like `sg-` for subgraphs)
 - Bare `break` without `when` clause in sequence diagrams
 
@@ -197,6 +198,20 @@ Read `../architect-shared/html-template.md`. Fill in the design review template 
 - **Recommendations** — numbered actionable improvements synthesizing all domain findings
 
 Use the nav links: `#summary`, `#diagrams`, `#architecture`, `#security`, `#scalability`, `#reliability`, `#antipatterns`, `#testability`, `#evolvability`, `#recommendations`.
+
+Each `finding` block must follow this exact structure for the CSS layout to work:
+```
+<div class="finding concern">
+  <span class="badge badge-concern">{Badge label}</span>
+  <div class="finding-text">
+    <strong>{Title}</strong>
+    <p>{Description text}</p>
+  </div>
+</div>
+```
+- The badge span closes with `</span>` (not `</strong>`)
+- The title goes in `<strong>` inside `.finding-text`
+- The description goes in `<p>` inside `.finding-text`
 
 ## Step 10: Save the report
 
