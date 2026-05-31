@@ -48,11 +48,12 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
       line-height: 1.6;
       display: flex;
       min-height: 100vh;
+      min-width: 0;
     }
 
     nav {
       width: 220px;
-      min-width: 220px;
+      flex-shrink: 0;
       background: #fff;
       border-right: 1px solid #e5e5ea;
       padding: 2rem 1.25rem;
@@ -85,9 +86,10 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
     nav a:hover { background: #f2f2f7; }
 
     main {
-      flex: 1;
+      flex: 1 1 0;
+      min-width: 0;
       padding: 2.5rem 3rem;
-      max-width: 960px;
+      max-width: 1600px;
     }
 
     header {
@@ -116,10 +118,12 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
       border-radius: 12px;
       padding: 1.5rem;
       margin-bottom: 1.25rem;
+      overflow-wrap: break-word;
+      word-break: break-word;
     }
 
     .card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; }
-    .card p { color: #3a3a3c; font-size: 0.9rem; }
+    .card p { color: #3a3a3c; font-size: 0.9rem; overflow-wrap: break-word; word-break: break-word; }
 
     .diagram-card {
       background: #fff;
@@ -128,11 +132,18 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
       padding: 1.5rem;
       margin-bottom: 1.25rem;
       overflow-x: auto;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      min-width: 0;
     }
 
     .diagram-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
     .diagram-desc { color: #6e6e73; font-size: 0.85rem; margin-bottom: 1rem; }
-    .mermaid { min-height: 80px; }
+    .mermaid {
+      min-height: 80px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
 
     .findings { display: flex; flex-direction: column; gap: 0.75rem; }
 
@@ -143,6 +154,7 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
       padding: 0.875rem 1rem;
       border-radius: 8px;
       font-size: 0.9rem;
+      min-width: 0;
     }
 
     .finding.strength { background: #f0faf4; border-left: 3px solid #30d158; }
@@ -158,16 +170,52 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
       flex-shrink: 0;
     }
 
+    .finding-text {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
     .badge-strength { background: #30d158; color: #fff; }
     .badge-concern  { background: #ff9f0a; color: #fff; }
     .badge-risk     { background: #ff3b30; color: #fff; }
 
-    .finding-text strong { display: block; margin-bottom: 0.2rem; }
-    .finding-text p { color: #3a3a3c; }
+    .finding-text strong { display: block; margin-bottom: 0.2rem; overflow-wrap: break-word; word-break: break-word; }
+    .finding-text p { color: #3a3a3c; overflow-wrap: break-word; word-break: break-word; }
+    .finding-text * { overflow-wrap: break-word; word-break: break-word; }
 
     .recommendations ol { padding-left: 1.5rem; }
-    .recommendations li { margin-bottom: 0.75rem; color: #3a3a3c; font-size: 0.9rem; }
+    .recommendations li { margin-bottom: 0.75rem; color: #3a3a3c; font-size: 0.9rem; overflow-wrap: break-word; word-break: break-word; }
     .recommendations li strong { color: #1d1d1f; }
+
+    @media (max-width: 600px) {
+      body {
+        flex-direction: column;
+      }
+
+      nav {
+        width: 100%;
+        min-width: 100%;
+        height: auto;
+        max-height: 30vh;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid #e5e5ea;
+        overflow-x: auto;
+      }
+
+      nav a {
+        display: inline-block;
+        margin-bottom: 0;
+        margin-right: 0.25rem;
+      }
+
+      main {
+        padding: 1.5rem 1.25rem;
+        max-width: 100%;
+      }
+
+      .diagram-card { margin-left: -1.25rem; margin-right: -1.25rem; }
+    }
   </style>
 </head>
 <body>
@@ -423,6 +471,26 @@ graph LR
 </html>
 ```
 
+## Finding block structure
+
+Every finding must follow this exact structure for the CSS to work:
+
+```html
+<div class="finding concern">
+  <span class="badge badge-concern">{Badge label}</span>
+  <div class="finding-text">
+    <strong>{Title}</strong>
+    <p>{Description text. Long lines wrap automatically. PoisonError and similar long identifiers wrap without overflow. URLs like https://example.com/path/to/resource also wrap properly. All text wraps at the container boundary.}</p>
+  </div>
+</div>
+```
+
+**Critical rules for finding blocks:**
+1. **Badge span must close with `</span>`, NOT `</strong>`** — the badge is a `<span>` element
+2. **Title must be wrapped in `<strong>` inside a `.finding-text` div** — the CSS targets `.finding-text strong`
+3. **Description must be in `<p>` inside `.finding-text`** — the CSS targets `.finding-text p`
+4. **Never put text content directly between `<span class="badge">` and `</strong>`** — this is a common error that breaks the entire flex layout
+
 ## Mermaid diagram syntax reference
 
 All diagrams use `<div class="mermaid">` blocks. Common types:
@@ -437,10 +505,6 @@ Parentheses `(` `)` inside labels of **cylinder** `[("...")]` or **rounded** `("
 ✅ AVS --> DB[("pgvector\nPostgreSQL extension")]          # remove parens
 ✅ AVS --> DB["pgvector\n(PostgreSQL extension)"]          # or use ["..."] rectangle shape
 ```
-
-Other shapes (`["..."]`, `{...}`, `((...))`, `[...]`) are fine with inner parentheses.
-
-**Always scan Mermaid output for parentheses inside cylinder/rounded labels before writing.**
 
 ### ⚠️ Also: Special characters in bare [text] nodes need quoting
 
@@ -457,6 +521,21 @@ Bare `[text]` node labels (no quotes around the text) cannot contain special cha
 This also applies to cylinder nodes: prefer `[("text")]` over `[(text)]` when the text contains `+`, `/`, or other special chars.
 
 **When in doubt, always use `["..."]` for node labels.**
+
+### ⚠️ Never use double quotes inside edge-labels — use single quotes
+
+Mermaid treats `"` inside edge labels as the label terminator, so `|-` |emit "file-changed"|- breaks with a parse error. Always use **single quotes** for strings inside edge labels:
+
+```
+❌ Watcher -.->|emit "file-changed"| Preview
+✅ Watcher -.->|emit 'file-changed'| Preview
+❌ A -->|"POST /api/users"| B
+✅ A -->|'POST /api/users'| B
+❌ A -->|"User clicks button"| B
+✅ A -->|'User clicks button'| B
+```
+
+**Rule of thumb:** if an edge label (`|...|`) contains text with apostrophes or natural language, always use single quotes. If the text itself contains single quotes, use double quotes but escape inner ones — or rephrase to avoid them. For most technical labels (event names, HTTP methods, etc.), single quotes are the right default.
 
 ### ⚠️ Subgraph IDs must not collide with node IDs
 
