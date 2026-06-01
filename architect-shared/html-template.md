@@ -7,24 +7,12 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
 **For `architect-design-review`:**
 - Executive Summary
 - Architecture Diagrams
-- Architecture
-- Security
-- Scalability
-- Reliability
-- Anti-Patterns
-- Testability
-- Evolvability
+- Dynamic criteria sections generated from applicable reviewable sections in `architecture-principles.md`
 - Recommendations
 
 **For `architect-codebase-review`:**
 - Current Architecture (diagrams + narrative)
-- Architecture
-- Security
-- Scalability
-- Reliability
-- Anti-Patterns
-- Testability
-- Evolvability
+- Dynamic criteria sections generated from applicable reviewable sections in `architecture-principles.md`
 - Recommended Architecture (revised diagrams + migration notes)
 
 ## Full HTML template
@@ -225,24 +213,15 @@ Use this to produce the architecture review HTML output. Replace all `{PLACEHOLD
     <!-- Design review nav: -->
     <a href="#summary">Executive Summary</a>
     <a href="#diagrams">Diagrams</a>
-    <a href="#architecture">Architecture</a>
-    <a href="#security">Security</a>
-    <a href="#scalability">Scalability</a>
-    <a href="#reliability">Reliability</a>
-    <a href="#antipatterns">Anti-Patterns</a>
-    <a href="#testability">Testability</a>
-    <a href="#evolvability">Evolvability</a>
+    <!-- Add one dynamic criteria link per evaluated review section:
+    <a href="#{generated-anchor}">{Section heading}</a>
+    -->
     <a href="#recommendations">Recommendations</a>
 
     <!-- Codebase review nav (replace above with this):
     <a href="#current">Current Architecture</a>
-    <a href="#architecture">Architecture</a>
-    <a href="#security">Security</a>
-    <a href="#scalability">Scalability</a>
-    <a href="#reliability">Reliability</a>
-    <a href="#antipatterns">Anti-Patterns</a>
-    <a href="#testability">Testability</a>
-    <a href="#evolvability">Evolvability</a>
+    Add one dynamic criteria link per evaluated review section:
+    <a href="#{generated-anchor}">{Section heading}</a>
     <a href="#recommended">Recommended Architecture</a>
     -->
   </nav>
@@ -295,8 +274,9 @@ graph LR
 
     </section>
 
-    <section id="architecture">
-      <h2>Architecture</h2>
+    <!-- Repeat once per evaluated review section from architecture-principles.md -->
+    <section id="{generated-anchor}">
+      <h2>{Section heading}</h2>
       <div class="findings">
 
         <div class="finding strength">
@@ -326,60 +306,6 @@ graph LR
       </div>
     </section>
 
-    <section id="security">
-      <h2>Security</h2>
-      <div class="findings">
-
-        <!-- Add finding blocks here -->
-
-      </div>
-    </section>
-
-    <section id="scalability">
-      <h2>Scalability</h2>
-      <div class="findings">
-
-        <!-- Add finding blocks here -->
-
-      </div>
-    </section>
-
-    <section id="reliability">
-      <h2>Reliability</h2>
-      <div class="findings">
-
-        <!-- Add finding blocks here -->
-
-      </div>
-    </section>
-
-    <section id="antipatterns">
-      <h2>Anti-Patterns</h2>
-      <div class="findings">
-
-        <!-- Add finding blocks here -->
-
-      </div>
-    </section>
-
-    <section id="testability">
-      <h2>Testability</h2>
-      <div class="findings">
-
-        <!-- Add finding blocks here -->
-
-      </div>
-    </section>
-
-    <section id="evolvability">
-      <h2>Evolvability</h2>
-      <div class="findings">
-
-        <!-- Add finding blocks here -->
-
-      </div>
-    </section>
-
     <section id="recommendations" class="recommendations">
       <h2>Recommendations</h2>
       <div class="card">
@@ -401,54 +327,8 @@ graph LR
       </div>
     </section>
 
-    <section id="architecture">
-      <h2>Architecture</h2>
-      <div class="findings">
-        [finding blocks]
-      </div>
-    </section>
-
-    <section id="security">
-      <h2>Security</h2>
-      <div class="findings">
-        [finding blocks]
-      </div>
-    </section>
-
-    <section id="scalability">
-      <h2>Scalability</h2>
-      <div class="findings">
-        [finding blocks]
-      </div>
-    </section>
-
-    <section id="reliability">
-      <h2>Reliability</h2>
-      <div class="findings">
-        [finding blocks]
-      </div>
-    </section>
-
-    <section id="antipatterns">
-      <h2>Anti-Patterns</h2>
-      <div class="findings">
-        [finding blocks]
-      </div>
-    </section>
-
-    <section id="testability">
-      <h2>Testability</h2>
-      <div class="findings">
-        [finding blocks]
-      </div>
-    </section>
-
-    <section id="evolvability">
-      <h2>Evolvability</h2>
-      <div class="findings">
-        [finding blocks]
-      </div>
-    </section>
+    <!-- Dynamic criteria sections: one per evaluated review section from architecture-principles.md -->
+    <!-- Each section follows the generic dynamic criteria template shown in the design review section above -->
 
     <section id="recommended">
       <h2>Recommended Architecture</h2>

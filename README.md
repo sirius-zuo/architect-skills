@@ -12,6 +12,8 @@ LLM agent skills for software architecture analysis and review. This repository 
 
 Both skills produce a Mermaid.js HTML report saved to `docs/architecture/review/`.
 
+Evaluation criteria come from `architect-shared/architecture-principles.md`. To add a new review domain, add a new reviewable `##` section there; both public skills will include it automatically when it applies.
+
 ## Installation
 
 ### Claude Code (recommended — full skill invocation support)
@@ -128,6 +130,32 @@ To run manually: invoke `/architect-design-review` in Claude Code.
 
 Invoke `/architect-codebase-review` in any project directory.
 
+## Adding review domains
+
+`architect-shared/architecture-principles.md` is the single source of truth for review criteria. Each reviewable `##` heading becomes a report section in the generated HTML.
+
+Example:
+
+```markdown
+## Data Architecture
+
+**Applies to:** design, codebase
+
+### Check for
+
+- Ownership of data domains
+- Canonical data models
+- Data lineage
+- Data retention policies
+
+### Signals of concern
+
+- Multiple systems claim ownership of the same data
+- No source of truth
+```
+
+Use `**Applies to:** design`, `**Applies to:** codebase`, or `**Applies to:** design, codebase` to control which public skill evaluates a section. Use `**Review role:** Reference only` for vocabulary or guidance sections that should not become report sections.
+
 ## Diagram types
 
 Both skills always generate:
@@ -158,6 +186,7 @@ architect-skills/
 │   └── RUNS.md
 ├── architect-shared/            # Shared reference files (installed with skills)
 │   ├── architecture-principles.md
+│   ├── dynamic-review-framework.md
 │   ├── diagram-selection.md
 │   └── html-template.md
 ├── tests/                       # Manual test scenarios (repo-only, not installed)

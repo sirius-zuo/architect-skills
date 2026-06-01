@@ -28,9 +28,12 @@ Create this directory locally before invoking.
 - Generates a System Context diagram showing: external HTTP client → my-api service
 - Generates a Component diagram showing: handler package → store package
 - Proposes at least one additional diagram (e.g., data/information architecture for the User entity)
-- Runs all four domain evaluations (Architecture, Security, Scalability, Reliability)
+- Evaluates every applicable reviewable section from `architect-shared/architecture-principles.md`
+- Report includes dynamic criteria sections generated from principle headings, including `#security` if the Security heading remains reviewable
 - Saves an HTML report to `docs/architecture/review/YYYY-MM-DD-my-api-codebase-architecture.html`
 - Confirms the saved path to the user
+- Report includes the required wrapper sections and dynamic criteria sections:
+  - Codebase review: `#current`, generated criteria anchors, `#recommended`
 - Report opens in a browser without JavaScript errors
 
 **Fail signals:**
@@ -185,3 +188,42 @@ func main() {
 - Report file is created at a path containing `etc` or outside the project root
 - Skill crashes while constructing the file path
 - No warning is surfaced about the unsafe project name
+
+---
+
+## CB-D1: Applicability marker filters dynamic criteria
+
+**Category:** decision_logic, output_quality
+**Type:** dynamic-criteria
+
+**Setup:** Temporarily add these sections to `architect-shared/architecture-principles.md`:
+
+```markdown
+## Codebase Only Probe
+
+**Applies to:** codebase
+
+### Check for
+
+- Source-level evidence
+
+## Reference Only Probe
+
+**Review role:** Reference only
+
+This section should guide reviewers but should not appear as a report section.
+```
+
+**Input:** Use any valid small codebase.
+
+**Invocation:** `invoke architect-codebase-review`
+
+**Expected output:**
+- The report includes `#codebase-only-probe`
+- The report does not include `#reference-only-probe`
+- The skill does not require edits to `architect-codebase-review/SKILL.md`
+
+**Fail signals:**
+- Reference-only content appears as an evaluation section
+- Codebase-only content is skipped in codebase review
+- The report only includes the old hardcoded domain list
