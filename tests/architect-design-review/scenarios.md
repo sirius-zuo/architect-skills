@@ -41,10 +41,13 @@ A web application with a React frontend and a Node.js REST API backed by Postgre
 - Generates a System Context diagram: external user → React frontend → API → PostgreSQL; Auth0 and SendGrid as external services
 - Generates a Component diagram: frontend → API → database layer
 - Proposes at least one additional diagram (e.g., Sequence for JWT auth flow, or Integration for Auth0/SendGrid)
-- Runs all four domain evaluations (Architecture, Security, Scalability, Reliability)
+- Evaluates every applicable reviewable section from `architect-shared/architecture-principles.md`
+- Report includes dynamic criteria sections generated from principle headings, including `#security` if the Security heading remains reviewable
 - Saves HTML report to `docs/architecture/review/YYYY-MM-DD-sample-app-design-architecture.html`
 - Confirms saved path
-- Report opens in a browser without errors; all sections present (#summary, #diagrams, #architecture, #security, #scalability, #reliability, #recommendations)
+- Report opens in a browser without errors
+- Report includes the required wrapper sections and dynamic criteria sections:
+  - Design review: `#summary`, `#diagrams`, generated criteria anchors, `#recommendations`
 
 **Fail signals:**
 - Skill crashes before generating diagrams
@@ -222,3 +225,73 @@ A simple web app.
 - No warning is surfaced about the unsafe project name
 
 ---
+
+---
+
+## DR-D1: Dynamic principle section appears in design report
+
+**Category:** decision_logic, output_quality
+**Type:** dynamic-criteria
+
+**Setup:** Temporarily add this section to `architect-shared/architecture-principles.md`:
+
+```markdown
+## Data Architecture
+
+**Applies to:** design, codebase
+
+### Check for
+
+- Ownership of data domains
+- Canonical data models
+
+### Signals of concern
+
+- No source of truth
+```
+
+**Input:** Use any valid design spec with at least one data entity or database.
+
+**Invocation:** `invoke architect-design-review`
+
+**Expected output:**
+- The skill does not require edits to `architect-design-review/SKILL.md`
+- The generated report includes a `#data-architecture` nav link and section
+- The Data Architecture section contains Strength, Concern, Risk, or No material findings blocks
+- Other dynamic criteria sections remain present
+
+**Fail signals:**
+- Data Architecture is absent from the report
+- The skill only evaluates the old hardcoded domain list
+- The report includes malformed finding blocks
+---
+
+## DR-D2: Codebase-only criteria are skipped in design review
+
+**Category:** decision_logic, output_quality
+**Type:** dynamic-criteria
+
+**Setup:** Temporarily add this section to `architect-shared/architecture-principles.md`:
+
+```markdown
+## Codebase Only Probe
+
+**Applies to:** codebase
+
+### Check for
+
+- Source-level evidence
+```
+
+**Input:** Use any valid design spec.
+
+**Invocation:** `invoke architect-design-review`
+
+**Expected output:**
+- The report does not include `#codebase-only-probe`
+- Other applicable dynamic criteria sections still appear
+- The skill does not halt because a section is not applicable
+
+**Fail signals:**
+- Codebase-only criteria appear in the design report
+- The skill halts instead of filtering non-applicable criteria
