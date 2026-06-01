@@ -27,20 +27,24 @@ The skill checks these sources in order and uses the first match:
 
 ## Guaranteed HTML section IDs
 
-The output HTML file is guaranteed to contain these anchors, in this order:
+The output HTML file is guaranteed to contain these wrapper anchors, in this order relative to dynamic criteria sections:
 
 | Section ID | Content |
 |---|---|
 | `#summary` | Executive summary (2-3 sentences on what the system is and key architectural choices) |
 | `#diagrams` | Architecture diagrams (System Context, Component, and any user-confirmed additional diagrams) |
-| `#architecture` | Architecture domain findings (Strengths, Concerns, Risks) |
-| `#security` | Security domain findings |
-| `#scalability` | Scalability domain findings |
-| `#reliability` | Reliability domain findings |
-| `#antipatterns` | Anti-patterns findings |
-| `#testability` | Testability domain findings |
-| `#evolvability` | Evolvability domain findings |
-| `#recommendations` | Numbered actionable improvements synthesizing all domain findings |
+| dynamic criteria anchors | One section per applicable reviewable `##` heading in `architecture-principles.md`, in document order |
+| `#recommendations` | Numbered actionable improvements synthesizing all dynamic criteria findings |
+
+Dynamic criteria anchors are generated from headings by lowercasing, replacing non-alphanumeric sequences with `-`, trimming leading/trailing `-`, and appending `-2`, `-3`, and so on for duplicates.
+
+Examples:
+
+| Principle heading | Generated anchor |
+|---|---|
+| `Security` | `#security` |
+| `Cost Efficiency (FinOps)` | `#cost-efficiency-finops` |
+| `API Architecture` | `#api-architecture` |
 
 ## Side effects
 
@@ -48,7 +52,7 @@ The skill takes exactly these filesystem actions, in this order:
 
 1. **Read-only:** Reads the spec file from `docs/superpowers/specs/` (most recent, or specified path)
 2. **Read-only:** Reads up to 3 documents referenced by the spec (depth 1 only)
-3. **Read-only:** Reads `../architect-shared/architecture-principles.md`, `../architect-shared/diagram-selection.md`, and `../architect-shared/html-template.md`
+3. **Read-only:** Reads `../architect-shared/architecture-principles.md`, `../architect-shared/dynamic-review-framework.md`, `../architect-shared/diagram-selection.md`, and `../architect-shared/html-template.md`
 4. **Write:** `mkdir -p docs/architecture/review`
 5. **Write:** Writes the HTML report to the output path (overwrites if file already exists)
 

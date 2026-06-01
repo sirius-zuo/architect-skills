@@ -27,26 +27,30 @@ The skill checks these sources in order and uses the first match:
 
 ## Guaranteed HTML section IDs
 
-The output HTML file is guaranteed to contain these anchors, in this order:
+The output HTML file is guaranteed to contain these wrapper anchors, in this order relative to dynamic criteria sections:
 
 | Section ID | Content |
 |---|---|
 | `#current` | Current architecture diagrams and narrative |
-| `#architecture` | Architecture domain findings (Strengths, Concerns, Risks) |
-| `#security` | Security domain findings |
-| `#scalability` | Scalability domain findings |
-| `#reliability` | Reliability domain findings |
-| `#antipatterns` | Anti-patterns findings |
-| `#testability` | Testability domain findings |
-| `#evolvability` | Evolvability domain findings |
+| dynamic criteria anchors | One section per applicable reviewable `##` heading in `architecture-principles.md`, in document order |
 | `#recommended` | Recommended architecture diagrams and numbered migration steps |
+
+Dynamic criteria anchors are generated from headings by lowercasing, replacing non-alphanumeric sequences with `-`, trimming leading/trailing `-`, and appending `-2`, `-3`, and so on for duplicates.
+
+Examples:
+
+| Principle heading | Generated anchor |
+|---|---|
+| `Security` | `#security` |
+| `Cost Efficiency (FinOps)` | `#cost-efficiency-finops` |
+| `API Architecture` | `#api-architecture` |
 
 ## Side effects
 
 The skill takes exactly these filesystem actions, in this order:
 
 1. **Read-only:** Reads files within the codebase root (source files, manifests, architecture docs)
-2. **Read-only:** Reads `../architect-shared/architecture-principles.md` and `../architect-shared/diagram-selection.md` and `../architect-shared/html-template.md`
+2. **Read-only:** Reads `../architect-shared/architecture-principles.md`, `../architect-shared/dynamic-review-framework.md`, `../architect-shared/diagram-selection.md`, and `../architect-shared/html-template.md`
 3. **Write:** `mkdir -p docs/architecture/review` — creates the output directory if it does not exist
 4. **Write:** Writes the HTML report to the output path (overwrites if a file at that path already exists)
 
