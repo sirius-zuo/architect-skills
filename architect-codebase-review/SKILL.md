@@ -85,11 +85,12 @@ Do not read or process any file whose canonical path is outside the confirmed co
 
 ## Step 4: Load shared references
 
-Read both files:
+Read all three files:
 - `../architect-shared/architecture-principles.md`
+- `../architect-shared/dynamic-review-framework.md`
 - `../architect-shared/diagram-selection.md`
 
-If either file cannot be read, halt immediately: `ERROR: Step 4 — could not read [filename]. The architect-shared/ directory may be missing or misconfigured. Stopping.`
+If any file cannot be read, halt immediately: `ERROR: Step 4 — could not read [filename]. The architect-shared/ directory may be missing or misconfigured. Stopping.`
 
 ## Step 5: Map current architecture
 
@@ -132,82 +133,26 @@ Fix any issues found before moving on.
 
 **Context release:** Discard intermediate diagram drafts and any raw file content still in context. Carry forward only the final validated Mermaid code blocks for each diagram.
 
-## Step 10: Evaluate current architecture
+## Step 10: Evaluate current architecture dynamically
 
-Load `../architect-shared/architecture-principles.md`. Run four domain evaluations in order. Each produces a list of findings classified as Strength, Concern, or Risk.
+Load `../architect-shared/architecture-principles.md` and `../architect-shared/dynamic-review-framework.md`.
 
-### Step 10a: Architecture
+Using the dynamic review framework:
 
-Evaluate against: Separation of Concerns, Cohesion and Coupling, Layered Architecture, Hexagonal Architecture / Ports and Adapters. Also identify architectural smells:
-- God modules (one file/package doing everything)
-- Missing abstraction layers (UI talking directly to DB)
-- Circular dependencies
-- Tight coupling between business logic and infrastructure
-- Missing error boundaries or observability hooks
+1. Derive reviewable sections from every `##` heading in `architecture-principles.md`.
+2. Exclude sections marked `**Review role:** Reference only`.
+3. Evaluate only sections that apply to `codebase`, or that omit `Applies to`.
+4. Preserve the principles document order.
+5. Evaluate each applicable section against the structured architectural summary from Step 5.
+6. Use codebase evidence from source structure, manifests, architecture documents, deployment/configuration files, and selected source content.
+7. Classify findings as Strength, Concern, or Risk.
+8. If an applicable section has no material findings, emit the framework's "No material findings" block.
+9. Generate stable section anchors from headings using the framework's anchor rules.
+10. Record warnings for unrecognized applicability markers.
 
-### Step 10b: Security
+The principles file is the single source of truth. Do not hardcode a fixed domain list in this skill.
 
-Evaluate against the Security section of the principles:
-- AuthN/AuthZ: Is authentication enforced at the right layer? Is authorization centralized or scattered?
-- Secrets management: Are credentials/keys externalized? Is there a secrets store pattern?
-- Network boundaries: Are internal services unnecessarily exposed? Is there an API gateway or DMZ?
-- Data protection: Is encryption at rest and in transit accounted for? Are sensitive fields identified?
-- OWASP Top 10 signals: injection risks, broken access control, security misconfiguration, insecure design, vulnerable components, sensitive data exposure.
-
-### Step 10c: Scalability
-
-Evaluate against the Scalability section of the principles:
-- Stateless services: Can instances be added horizontally without shared mutable state? Where is session/state stored?
-- Data partitioning: Is there a sharding or tenant-isolation strategy for high data volumes?
-- Caching: Are hot read paths cached? Is cache invalidation addressed?
-- Async processing: Are long-running tasks offloaded from the synchronous request path?
-- Rate limiting and backpressure: Is the system protected from traffic spikes?
-- Capacity headroom: Are there obvious bottlenecks (N+1 queries, unbounded queues, single-threaded workers)?
-
-### Step 10d: Reliability
-
-Evaluate against the Reliability section of the principles:
-- Graceful degradation: Does the system define behavior when a dependency is unavailable?
-- Circuit breakers and retries: Are patterns in place to prevent cascade failures?
-- Redundancy: Are there single points of failure (single DB, single app instance, single region)?
-- Failover: Is there an active/passive or active/active setup for critical components?
-- Health checks: Are liveness and readiness probes defined for all services?
-
-### Step 10e: Anti-Patterns
-
-Evaluate against the Common Anti-Patterns section of the principles. All patterns apply in codebase review:
-- Shared Database as Integration Hub: Multiple services writing to the same tables/schemas; cross-service SQL joins; shared schema migrations.
-- Distributed Monolith: Services calling each other in lockstep; services deployed together; no independent deployability.
-- Point-to-Point Coupling: Service A has direct connections to many other services; changing one service requires changes in half the codebase.
-- Leaky Abstraction: API responses mirroring database column names; domain models with infrastructure-specific fields; error messages exposing internal paths.
-- Point-to-Point Async: Each consumer maintains its own direct connection to producers; adding a new event requires changes in every consumer.
-- Missing Anti-Corruption Layer: Domain entities with fields named after external API parameters; domain logic transforming third-party formats.
-- Big Ball of Mud: One file is 5000+ lines; every function imports from every other module; no package/module structure.
-- Tight Coupling Through Shared Libraries: Services importing a monorepo package; breaking releases require coordinated changes across services.
-
-### Step 10f: Testability
-
-Evaluate against the Testability section of the principles:
-- Injectable dependencies: Can components be tested with mock/stub dependencies via constructor injection?
-- Domain-infra test boundary: Is there a clear separation for unit-testing domain logic vs integration-testing infrastructure?
-- Testable integration points: Are all external interactions (APIs, databases, message queues) mockable or stubbable at the boundary?
-- Independent test execution: Can tests run in parallel without shared mutable state or database contention?
-- Staging-to-production fidelity: Can the system be deployed in a staging environment that mirrors production configuration?
-- Fitness functions: Are there automated checks enforcing architectural quality (dependency rules, coupling limits, test coverage thresholds)?
-- Deterministic behavior: Are timing-dependent paths (retries, timeouts, race conditions) testable with controllable clock or mock time?
-- Feature flags for risky changes: Can risky features be deployed and controlled without code changes, allowing gradual rollout and quick rollback?
-
-### Step 10g: Evolvability
-
-Evaluate against the Evolvability section of the principles:
-- Stable boundaries with mutable internals: Do module/service boundaries allow internal implementation changes without breaking consumers?
-- Configuration-driven behavior: Is behavior driven by configuration (feature flags, routing tables, strategy selection) rather than code changes?
-- Identified extension points: Are places where new capabilities will be added explicitly designed (plug-in patterns, strategy interfaces, event hooks)?
-- Versioning strategy: Is there a strategy for versioning APIs and data schemas that supports backward-compatible evolution and defined deprecation windows?
-- Independent module releases: Can new capabilities be added to one module without requiring coordinated releases across other modules?
-- Behavior over structure: Is the system structured around what it does (capabilities, workflows) rather than what it is (data entities, technical layers)?
-
-**Context release:** Discard the full text of `architecture-principles.md` from context. Carry forward only the classified finding list (Strength / Concern / Risk) per domain.
+**Context release:** Discard the full text of `architecture-principles.md` and `dynamic-review-framework.md`. Carry forward only evaluated section headings, generated anchors, warnings, and classified findings per section.
 
 ## Step 11: Generate recommended architecture diagrams
 
@@ -215,19 +160,15 @@ For each current-state diagram, produce a revised version showing the recommende
 
 ## Step 12: Build the HTML report
 
-Read `../architect-shared/html-template.md`. Use the codebase review template with nine sections:
+Read `../architect-shared/html-template.md`. Use the codebase review template with:
 
 - **Current Architecture** — all current-state diagrams in `diagram-card` blocks with narrative
-- **Architecture** — findings from Step 10a as `finding` blocks
-- **Security** — findings from Step 10b as `finding` blocks
-- **Scalability** — findings from Step 10c as `finding` blocks
-- **Reliability** — findings from Step 10d as `finding` blocks
-- **Anti-Patterns** — findings from Step 10e as `finding` blocks
-- **Testability** — findings from Step 10f as `finding` blocks
-- **Evolvability** — findings from Step 10g as `finding` blocks
-- **Recommended Architecture** — revised diagrams, numbered actionable changes (synthesizing all domain findings), migration notes
+- **Dynamic criteria sections** — one section per evaluated review section from Step 10, in principles document order
+- **Recommended Architecture** — revised diagrams, numbered actionable changes synthesizing all dynamic criteria findings, migration notes
 
-Use nav links: `#current`, `#architecture`, `#security`, `#scalability`, `#reliability`, `#antipatterns`, `#testability`, `#evolvability`, `#recommended`.
+Use nav links in this order: `#current`, one link per generated criteria anchor from Step 10, then `#recommended`.
+
+If Step 10 produced warnings, include them in the Current Architecture narrative or a short note before Recommended Architecture.
 
 Each `finding` block must follow this exact structure for the CSS layout to work:
 ```
