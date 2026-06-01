@@ -5,6 +5,27 @@ Use these as evaluation criteria. For each relevant principle, classify findings
 - ⚠️ **Concern** — a potential issue worth addressing
 - ❌ **Risk** — a significant architectural problem
 
+## Review Section Conventions
+
+**Review role:** Reference only
+
+This section explains how review criteria are interpreted by the architect review skills. It is guidance for the skills, not an evaluation domain.
+
+Each `##` heading is a candidate review section unless it is marked otherwise.
+
+**Review role** controls whether a section is evaluated:
+- `Evaluation` — evaluate this section and include it in reports
+- `Reference only` — use this section as supporting vocabulary or guidance, but do not create a report section for it
+
+**Applies to** controls review type:
+- `design` — evaluate only during `architect-design-review`
+- `codebase` — evaluate only during `architect-codebase-review`
+- `design, codebase` — evaluate during both review types
+
+If `Review role` is omitted, treat the section as `Evaluation`.
+If `Applies to` is omitted, treat the section as applying to both `design` and `codebase`.
+All content under a reviewable `##` heading belongs to that section until the next `##` heading.
+
 ## Separation of Concerns
 
 Each component has one clear responsibility. Business logic is separate from persistence, presentation, and infrastructure.
@@ -92,6 +113,234 @@ High-availability focused.
 - **Failover** — Is there an active/passive or active/active setup for critical components?
 - **Health checks** — Are liveness and readiness probes defined for all services? Does the load balancer use them?
 
+## Resilience
+
+Reliability focuses on availability. Resilience focuses on surviving unexpected conditions, recovering from failure, and limiting blast radius.
+
+**Check for:**
+- Chaos testing strategy
+- Dependency isolation
+- Bulkhead patterns
+- Load shedding
+- Brownout modes
+- Recovery Time Objective (RTO)
+- Recovery Point Objective (RPO)
+- Disaster recovery exercises
+
+**Signals of concern:**
+- Nobody knows what happens when a critical dependency dies
+- Region failover has never been tested
+- Backups exist but restores are untested
+- Retry behavior can amplify an outage
+
+## Data Architecture
+
+Data has clear ownership, lineage, retention, and consistency rules.
+
+**Check for:**
+- Ownership of data domains
+- Canonical data models
+- Data lineage
+- Data retention policies
+- Data archival strategy
+- Data consistency model (strong, eventual, causal, or explicitly mixed)
+- Data governance
+
+**Signals of concern:**
+- Multiple systems claim ownership of the same data
+- No source of truth exists for critical business entities
+- Reporting databases are built from undocumented ETL pipelines
+- Retention and deletion requirements are not represented in the architecture
+
+## Cost Efficiency (FinOps)
+
+The architecture uses resources intentionally and exposes cost drivers early enough to manage them.
+
+**Check for:**
+- Autoscaling effectiveness
+- Resource utilization
+- Storage growth projections
+- Cost observability
+- Cost allocation by tenant, team, or product
+- Expensive synchronous dependencies
+- Token and inference cost controls for AI-heavy systems
+
+**Signals of concern:**
+- Architecture only works by overprovisioning
+- Unlimited log, trace, or artifact retention
+- Excessive cross-region traffic
+- LLM calls on every request without caching, routing, or budget controls
+
+## Operability
+
+The system can be safely run, maintained, diagnosed, and repaired by people who did not originally build it.
+
+**Check for:**
+- Runbooks
+- Alerting strategy
+- Deployment rollback procedures
+- Incident response ownership
+- Operational dashboards
+- On-call readiness
+- Maintenance procedures
+
+**Signals of concern:**
+- Only original developers know how the system works
+- Deployments require manual tribal knowledge
+- Alerts identify symptoms but not owners or likely causes
+- Routine maintenance requires direct production access
+
+## Deployment Architecture
+
+Deployment topology, release strategy, and infrastructure management are explicit parts of the architecture.
+
+**Check for:**
+- CI/CD maturity
+- Deployment topology
+- Blue-green deployments
+- Canary releases
+- Progressive delivery
+- Infrastructure as Code
+- Immutable infrastructure
+- Environment promotion strategy
+
+**Signals of concern:**
+- Production changes are made manually
+- Snowflake servers or hand-configured environments exist
+- Each service has a different deployment process
+- Rollback depends on manual reconstruction of prior state
+
+## Event Architecture
+
+Event-driven systems have explicit ownership, contracts, evolution rules, and failure handling.
+
+**Check for:**
+- Event ownership
+- Event versioning
+- Schema evolution
+- Idempotency
+- Replayability
+- Ordering guarantees
+- Dead-letter handling
+- Exactly-once assumptions
+
+**Signals of concern:**
+- Consumers depend on global event ordering
+- No schema registry or contract governance exists
+- Event payloads are used as database replacements
+- Replay behavior is undocumented or unsafe
+
+## AI Architecture
+
+AI-enabled systems make model, prompt, context, evaluation, safety, and cost decisions explicit.
+
+**Check for:**
+- Model ownership
+- Model routing strategy
+- Prompt versioning
+- Context management
+- Evaluation pipelines
+- Hallucination mitigation
+- Human review workflows
+- Model fallback strategy
+- Token cost controls
+- AI-specific observability
+
+**Signals of concern:**
+- Prompts are hardcoded throughout the codebase
+- No evaluation framework exists
+- Model outputs are not observable or traceable
+- Critical decisions depend on unreviewed model responses
+
+## Multi-Tenancy
+
+Tenant isolation, fairness, observability, and authorization are designed intentionally.
+
+**Check for:**
+- Tenant isolation
+- Data segregation
+- Tenant-aware authorization
+- Noisy-neighbor protection
+- Per-tenant quotas
+- Per-tenant observability
+
+**Signals of concern:**
+- Tenant ID is passed manually through unrelated code paths
+- Shared caches do not isolate tenant data
+- Authorization rules are not tenant-aware
+- One tenant can consume shared capacity without limits
+
+## Architecture Governance
+
+Important architectural decisions are explicit, owned, reviewed, and revisited.
+
+**Check for:**
+- Architecture Decision Records (ADRs)
+- Decision rationale
+- Explicit trade-offs
+- Ownership of architecture decisions
+- Review cadence
+
+**Signals of concern:**
+- Nobody knows why a major technology was chosen
+- Architectural decisions exist only in chat logs
+- Major trade-offs are undocumented
+- No one owns architecture drift after implementation
+
+## Domain Architecture
+
+Business capabilities, bounded contexts, and team ownership are reflected in architecture boundaries.
+
+**Check for:**
+- Bounded contexts
+- Context maps
+- Upstream/downstream relationships
+- Shared Kernel usage
+- Customer/supplier relationships
+- Team ownership alignment
+
+**Signals of concern:**
+- Services are split by technical layers instead of business capabilities
+- Multiple teams modify the same business concepts without clear ownership
+- Shared domain language means different things in different modules
+- Cross-context dependencies bypass defined contracts
+
+## API Architecture
+
+APIs have clear contracts, compatibility guarantees, versioning, and error models.
+
+**Check for:**
+- Contract-first design
+- Backward compatibility
+- API versioning
+- Consumer-driven contract testing
+- Pagination strategy
+- Consistent error models
+
+**Signals of concern:**
+- Breaking API changes are shipped without migration paths
+- Error formats differ by endpoint or service
+- Public APIs are unversioned
+- Pagination, filtering, and idempotency are inconsistent
+
+## Architecture Fitness Metrics
+
+Architectural quality is checked continuously rather than only during manual review.
+
+**Check for:**
+- Dependency rules enforced automatically
+- Architectural conformance tests
+- Coupling metrics
+- Complexity metrics
+- Service dependency maps
+- Architectural drift detection
+
+**Signals of concern:**
+- Review findings cannot be converted into automated checks
+- Dependency direction is documented but unenforced
+- Coupling and complexity only become visible after failures
+- Service maps are manually maintained and quickly go stale
+
 ## Common Anti-Patterns
 
 These are recurring design decisions that look reasonable locally but cause systemic problems. Evaluate against these in both design and codebase reviews.
@@ -164,6 +413,8 @@ The architecture should allow changes to requirements and capabilities without r
 
 ## C4 Model Vocabulary (for communication)
 
+**Review role:** Reference only
+
 Use when describing architecture at different levels of abstraction:
 - **Context** — the system and its relationships to users and other systems
 - **Container** — deployable units (apps, services, databases)
@@ -171,6 +422,8 @@ Use when describing architecture at different levels of abstraction:
 - **Code** — classes, functions (usually too detailed for architecture reviews)
 
 ## DDD Tactical Patterns (when domain is complex)
+
+**Review role:** Reference only
 
 - **Aggregate** — cluster of objects treated as a unit with a single root
 - **Entity** — object with identity that persists over time
@@ -180,6 +433,8 @@ Use when describing architecture at different levels of abstraction:
 
 ## Architectural Smells (codebase review only — not applicable in design review)
 
+**Applies to:** codebase
+
 - **Anemic domain model** — domain objects with no behavior, only data
 - **Smart UI / dumb domain** — all logic in controllers or UI components
 - **God service** — one service class or module handling everything
@@ -187,6 +442,8 @@ Use when describing architecture at different levels of abstraction:
 - **Missing anti-corruption layer** — third-party models used directly in domain
 
 ## When to Look Deeper
+
+**Review role:** Reference only
 
 These principles cover structural quality attributes that apply to any system. For specialized domains, findings from these sections may reveal gaps that need deeper review:
 
