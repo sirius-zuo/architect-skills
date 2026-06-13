@@ -9,10 +9,12 @@ install_to() {
   cp -r "$SCRIPT_DIR/architect-design-review" "$target_dir/"
   cp -r "$SCRIPT_DIR/architect-codebase-review" "$target_dir/"
   cp -r "$SCRIPT_DIR/architect-shared" "$target_dir/"
+  cp -r "$SCRIPT_DIR/contracts" "$target_dir/"
   echo "Installed to $target_dir"
   echo "  ✓ architect-design-review"
   echo "  ✓ architect-codebase-review"
   echo "  ✓ architect-shared"
+  echo "  ✓ contracts"
 }
 
 AGENT="${1:-}"

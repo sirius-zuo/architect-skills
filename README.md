@@ -192,9 +192,9 @@ architect-skills/
 ├── tests/                       # Manual test scenarios (repo-only, not installed)
 │   ├── architect-codebase-review/scenarios.md
 │   └── architect-design-review/scenarios.md
-└── contracts/                   # Output contracts for downstream consumers (repo-only)
+└── contracts/                   # Output contracts for downstream consumers (installed)
     ├── architect-codebase-review.md
     └── architect-design-review.md
 ```
 
-`tests/` and `contracts/` are **not installed** by `install.sh` — they are reference material for maintainers. `RUNS.md` files are co-located with each skill for easy reference but are also not installed.
+`tests/` is **not installed** by `install.sh` — it is reference material for maintainers. `contracts/` **is installed** alongside the skills so that consumers have the stable interface spec available locally. `RUNS.md` files are co-located with each skill for easy reference but are also not installed.
