@@ -54,6 +54,8 @@ When CodeGraph is available (see Step 1), Step 5's architecture mapping is typic
 
 ## Step 1: Explore codebase structure
 
+**Detect CodeGraph availability:** Call `codegraph_status`. If it succeeds and reports a healthy, initialized index, set `codegraph_available = true` for the rest of this run. If it errors, times out, or reports the index is not initialized, set `codegraph_available = false` and continue — do not suggest running `codegraph init` or otherwise prompt the user about it; this skill is read-only, and initializing an index is a project setup decision outside its scope.
+
 ```bash
 # Detect tech stack
 ls -la
@@ -66,9 +68,11 @@ ls src/ lib/ app/ cmd/ internal/ 2>/dev/null | head -30
 find . -not -path '*/\.*' -not -path '*/node_modules/*' \( -name '*.go' -o -name '*.ts' -o -name '*.py' -o -name '*.java' -o -name '*.rs' \) 2>/dev/null | sed 's|/[^/]*$||' | sort | uniq -c | sort -rn | head -20
 ```
 
+If `codegraph_available`, additionally call `codegraph_files` to supplement the directory/module listing above with CodeGraph's indexed view. Manifest detection and README reading are unaffected by `codegraph_available` — CodeGraph does not index prose docs or config files.
+
 Read the top-level README.md if it exists.
 
-If any Bash command in this step fails (non-zero exit code) or returns empty output unexpectedly, note the failure and continue with available information — do not halt for optional discovery commands. If the Read on README.md fails, skip it and continue.
+If any Bash command in this step fails (non-zero exit code) or returns empty output unexpectedly, note the failure and continue with available information — do not halt for optional discovery commands. If the Read on README.md fails, skip it and continue. If `codegraph_status` or `codegraph_files` fails, treat it the same way: `codegraph_available = false` (or, for a `codegraph_files` failure after a successful `codegraph_status`, simply skip the supplement) and continue with Bash-only discovery.
 
 ## Step 2: Read existing architecture documents
 
