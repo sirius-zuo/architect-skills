@@ -165,10 +165,11 @@ Using the dynamic review framework:
 4. Preserve the principles document order.
 5. Evaluate each applicable section against the structured architectural summary from Step 5.
 6. Use codebase evidence from source structure, manifests, architecture documents, deployment/configuration files, and selected source content.
-7. Classify findings as Strength, Concern, or Risk.
-8. If an applicable section has no material findings, emit the framework's "No material findings" block.
-9. Generate stable section anchors from headings using the framework's anchor rules.
-10. Record warnings for unrecognized applicability markers.
+7. Where a finding concerns coupling, circular dependencies, or module size, and that evidence came from `codegraph_impact` in Step 5, cite the structural figure directly (e.g. "47 callers across 12 files") instead of a qualitative description.
+8. Classify findings as Strength, Concern, or Risk.
+9. If an applicable section has no material findings, emit the framework's "No material findings" block.
+10. Generate stable section anchors from headings using the framework's anchor rules.
+11. Record warnings for unrecognized applicability markers.
 
 The principles file is the single source of truth. Do not hardcode a fixed domain list in this skill.
 
