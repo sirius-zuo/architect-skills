@@ -105,13 +105,22 @@ If any file cannot be read, halt immediately: `ERROR: Step 4 — could not read 
 
 ## Step 5: Map current architecture
 
-From what you observed, identify:
+From what you observed in Steps 1–2, identify:
 - System boundary and external actors
-- Major modules/packages/services
 - Data stores and external dependencies
-- Communication patterns (sync HTTP, async events, queues)
 - Data entities (from model/schema files)
 - Deployment configuration (Dockerfile, k8s YAML, cloud configs)
+
+For major modules/packages/services and their communication patterns:
+
+If `codegraph_available`:
+- Use `codegraph_context` to identify the actual modules/packages and their real relationships (imports, calls) instead of inferring this from directory layout.
+- Use `codegraph_explore` to pull grouped source context for the modules `codegraph_context` surfaces, instead of separate Read calls per file.
+- Use `codegraph_impact` to detect circular dependencies and high fan-in/fan-out modules (god-module candidates) structurally.
+- If a codegraph call fails here (e.g. a transient MCP error), log `Warning: codegraph call failed for [purpose] — falling back to file-based inference.` and use the fallback below for that specific piece of evidence only — do not halt this step.
+- If a codegraph response includes a staleness banner naming specific files as edited since the last index sync, `Read` those files directly rather than trusting the codegraph result for them; codegraph remains authoritative for all other files in that response.
+
+If not `codegraph_available` (or as a fallback per above), infer modules/packages/services and their communication patterns (sync HTTP, async events, queues) from directory layout, naming conventions, and grep, as before.
 
 **Context release:** After completing this mapping, discard raw Bash output and full file content from Steps 1–2 from context. Carry forward only the structured architectural summary produced in this step.
 
