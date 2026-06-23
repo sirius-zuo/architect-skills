@@ -227,3 +227,70 @@ This section should guide reviewers but should not appear as a report section.
 - Reference-only content appears as an evaluation section
 - Codebase-only content is skipped in codebase review
 - The report only includes the old hardcoded domain list
+
+---
+
+## CB-D2: CodeGraph available
+
+**Category:** tool_integration, output_quality
+**Type:** dynamic-criteria
+
+**Input:** Any valid small codebase (e.g. the CB-H1 Go HTTP server fixture), in a project with a healthy, initialized CodeGraph index (`.codegraph/` present and `codegraph_status` reports healthy).
+
+**Invocation:** `invoke architect-codebase-review` from the project root.
+
+**Expected output:**
+- Step 1 calls `codegraph_status`, which succeeds; `codegraph_available` is treated as true for the rest of the run
+- Step 5 uses `codegraph_context`/`codegraph_explore`/`codegraph_impact` to map modules and relationships rather than inferring purely from directory layout
+- If the codebase has any real coupling concern, the corresponding Step 10 finding cites a structural figure (e.g. a caller count) rather than a purely qualitative description
+- The HTML report's Current Architecture section opens with: "Structural analysis assisted by CodeGraph index."
+
+**Fail signals:**
+- Report's disclosure line is missing or says CodeGraph is not available
+- Skill calls `codegraph_status` but never calls any other codegraph tool despite a healthy index
+- Skill halts or errors because CodeGraph is present
+
+---
+
+## CB-D3: CodeGraph unavailable
+
+**Category:** tool_integration, decision_logic
+**Type:** dynamic-criteria
+
+**Input:** Any valid small codebase (e.g. the CB-H1 Go HTTP server fixture) with no `.codegraph/` directory and no CodeGraph MCP server configured.
+
+**Invocation:** `invoke architect-codebase-review` from the project root.
+
+**Expected output:**
+- Step 1's `codegraph_status` call fails or is unavailable; `codegraph_available` is treated as false
+- No suggestion or prompt to run `codegraph init` appears anywhere in the skill's output
+- Step 5 falls back to directory-layout/grep-based inference exactly as it did before this change
+- The HTML report's Current Architecture section opens with: "CodeGraph not available — structural analysis based on file/grep heuristics."
+- All other report content (diagrams, dynamic criteria findings) is materially equivalent to a run of the skill before this change on the same fixture
+
+**Fail signals:**
+- Skill halts or errors because CodeGraph is unavailable
+- Skill prompts the user to initialize CodeGraph
+- Report's disclosure line is missing or says CodeGraph was used
+
+---
+
+## CB-D4: CodeGraph call fails mid-review
+
+**Category:** tool_integration, decision_logic
+**Type:** dynamic-criteria
+
+**Input:** Any valid small codebase, in a project where `codegraph_status` succeeds (reports a healthy index) but a subsequent call — `codegraph_context`, `codegraph_explore`, or `codegraph_impact` in Step 5 — fails or times out (e.g. simulate by triggering an MCP error after the initial status check).
+
+**Invocation:** `invoke architect-codebase-review` from the project root.
+
+**Expected output:**
+- Skill logs a warning of the form: "Warning: codegraph call failed for [purpose] — falling back to file-based inference."
+- The affected piece of evidence (and only that piece) falls back to directory-layout/grep-based inference
+- The review completes without halting and produces a full HTML report
+- The report's disclosure line still reads "Structural analysis assisted by CodeGraph index." since `codegraph_available` was true at detection time, even though one call failed later
+
+**Fail signals:**
+- Skill halts the entire review because one codegraph call failed
+- No warning is logged about the failed call
+- The report is missing sections or diagrams because of the failure

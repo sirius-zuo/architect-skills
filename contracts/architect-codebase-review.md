@@ -47,12 +47,13 @@ Examples:
 
 ## Side effects
 
-The skill takes exactly these filesystem actions, in this order:
+The skill takes exactly these filesystem and tool actions, in this order:
 
 1. **Read-only:** Reads files within the codebase root (source files, manifests, architecture docs)
-2. **Read-only:** Reads `../architect-shared/architecture-principles.md`, `../architect-shared/dynamic-review-framework.md`, `../architect-shared/diagram-selection.md`, and `../architect-shared/html-template.md`
-3. **Write:** `mkdir -p docs/architecture/review` — creates the output directory if it does not exist
-4. **Write:** Writes the HTML report to the output path (overwrites if a file at that path already exists)
+2. **Read-only (optional):** Queries CodeGraph MCP tools (`codegraph_status`, `codegraph_files`, `codegraph_context`, `codegraph_explore`, `codegraph_impact`) if a CodeGraph index is available in the codebase root; falls back to source/manifest reads if it is not
+3. **Read-only:** Reads `../architect-shared/architecture-principles.md`, `../architect-shared/dynamic-review-framework.md`, `../architect-shared/diagram-selection.md`, and `../architect-shared/html-template.md`
+4. **Write:** `mkdir -p docs/architecture/review` — creates the output directory if it does not exist
+5. **Write:** Writes the HTML report to the output path (overwrites if a file at that path already exists)
 
 **No source files are ever modified.** All reads are read-only. The only writes are the mkdir and the HTML file.
 
@@ -67,3 +68,4 @@ The skill takes exactly these filesystem actions, in this order:
 - No machine-parsable output format — output is HTML only
 - Input size limit: for codebases >50k LOC, the skill uses summarization rather than full reads; the report will note this
 - The `Agent` tool is used for sub-tasks; Agent scope is limited to read operations within the codebase root
+- Structural analysis (module relationships, circular dependencies, coupling) uses CodeGraph if available in the target project; otherwise it is inferred from file paths and grep, which is less precise. The report's Current Architecture section discloses which path was used.
