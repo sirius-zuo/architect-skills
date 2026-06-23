@@ -183,7 +183,7 @@ For each current-state diagram, produce a revised version showing the recommende
 
 Read `../architect-shared/html-template.md`. Use the codebase review template with:
 
-- **Current Architecture** — all current-state diagrams in `diagram-card` blocks with narrative
+- **Current Architecture** — all current-state diagrams in `diagram-card` blocks with narrative; begin this section's narrative with a one-line disclosure: `"Structural analysis assisted by CodeGraph index."` if `codegraph_available`, or `"CodeGraph not available — structural analysis based on file/grep heuristics."` otherwise
 - **Dynamic criteria sections** — one section per evaluated review section from Step 10, in principles document order
 - **Recommended Architecture** — revised diagrams, numbered actionable changes synthesizing all dynamic criteria findings, migration notes
 
